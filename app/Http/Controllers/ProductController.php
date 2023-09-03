@@ -44,11 +44,14 @@ class ProductController extends Controller
      * @param  \App\Models\product  $product
      * @return \Illuminate\Http\Response
      */
+
     public function show(product $product)
     {
         //
         return product::all();
     }
+
+    
 
     /**
      * Show the form for editing the specified resource.
