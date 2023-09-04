@@ -23,7 +23,5 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware('auth:sanctum')->group( function () {
     Route::post('/logout',[AuthController::class, 'logout']);
     Route::get('product', [ProductController::class, 'show'])->name('product');
+    Route::get('/user-role', [AuthController::class, 'roles'])->name('roles');
 });
-
-
-// Route::get('product', [ProductController::class, 'getProduct'])->name('product');
