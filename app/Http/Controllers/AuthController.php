@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -50,11 +51,13 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('myapptoken')->plainTextToken;
+        $role =  DB::table('user_roles')->where('id' , $user->role_id)->value('role');
 
         $response = [
             'user' => $user,
             'token' => $token,
-            'message' => 'success'
+            'message' => 'success',
+            'role' => $role
         ];
 
         return response($response, 201);
@@ -69,7 +72,8 @@ class AuthController extends Controller
     }
 
     public function roles(){
-        
-        return $user = auth()->user();
+        $user = auth()->user();
+        $role =  DB::table('user_roles')->where('id' , $user->role_id)->value('role');
+        return $role;
     }
 }

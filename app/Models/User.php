@@ -51,4 +51,9 @@ class User extends Authenticatable
      * @var bool
      */
     protected $tokensExpireIn = false;
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
 }
