@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Item extends Model
 {
     use HasFactory;
-    use OwenIt\Auditing\Contracts\Auditable;
+
+    protected $fillable = [
+        'name',
+        'item_type_id',
+        'active',
+        'stocks',
+        'supplier'
+    ];
 
 }

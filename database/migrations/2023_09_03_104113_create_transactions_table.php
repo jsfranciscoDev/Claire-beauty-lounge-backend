@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('employee_user_id');
+            $table->unsignedBigInteger('customer_user_id');
+            $table->unsignedBigInteger('transaction_date');
             $table->timestamps();
         });
     }
