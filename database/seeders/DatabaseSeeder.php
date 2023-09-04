@@ -18,8 +18,7 @@ class DatabaseSeeder extends Seeder
         $items = [
             [
                 'id' => '1',
-                'first_name' => 'admin',
-                'last_name' => 'admin',
+                'name' => 'admin',
                 'email'=>'admin@gmail.com',
                 'password' =>bcrypt('Admin@123'),
                 'role_id' =>1,
