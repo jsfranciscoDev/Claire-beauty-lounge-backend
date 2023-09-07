@@ -24,9 +24,11 @@ class ItemController extends Controller
         }
     }
 
-    public function show($id){
+    public function show(){
         return Item::getQuery()
-            ->where('items.id',$id)
+            ->when(request()->get('id'),function($builder,$value){
+                return $builder->whereIn('items.id',$value);
+            })
             ->join('item_types','item_types.id','items.item_type_id')
             ->select('items.*','item_types.name as type')
             ->get();

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('employee_user_id');
             $table->unsignedBigInteger('customer_user_id');
             $table->unsignedBigInteger('transaction_date');
+            $table->integer('status');
+            $table->dateTime('deleted_at');
             $table->timestamps();
         });
     }
