@@ -18,7 +18,7 @@ class StaffController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
-            'contact' => 'required|numeric|digits:10',
+            'contact' => 'required|numeric|digits:11',
         ]);
 
         $user = User::create([
