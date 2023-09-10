@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\ProductController;
 use \App\Http\Controllers\AuthController;
+use \App\Http\Controllers\StaffController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,4 +25,7 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::post('/logout',[AuthController::class, 'logout']);
     Route::get('product', [ProductController::class, 'show'])->name('product');
     Route::get('/user-role', [AuthController::class, 'roles'])->name('roles');
+    Route::post('/create-staff', [StaffController::class, 'createStaff']);
+    Route::get('/get-staff', [StaffController::class, 'getUserStaff']);
+    Route::delete('/remove-staff/{id}', [StaffController::class, 'removeStaff']);
 });

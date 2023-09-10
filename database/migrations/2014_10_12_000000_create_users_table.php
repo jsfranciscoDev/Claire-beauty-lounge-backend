@@ -25,6 +25,7 @@ return new class extends Migration
             $table->timestamps();
             $table->binary('profile_picture')->nullable(); 
             $table->binary('display_image')->nullable(); 
+            $table->unsignedBigInteger('contact')->nullable(); 
         });
     }
 
