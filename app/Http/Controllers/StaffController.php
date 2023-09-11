@@ -47,7 +47,8 @@ class StaffController extends Controller
             'users.id as id',
             'users.name',
             'users.email',
-            'user_roles.role'
+            'user_roles.role',
+            'users.contact'
         )
         ->paginate(10);
        
