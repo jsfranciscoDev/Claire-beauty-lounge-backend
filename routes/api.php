@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\ProductController;
 use \App\Http\Controllers\AuthController;
 use \App\Http\Controllers\StaffController;
+use \App\Http\Controllers\FilesController;
+use \App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,4 +30,6 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::post('/create-staff', [StaffController::class, 'createStaff']);
     Route::get('/get-staff', [StaffController::class, 'getUserStaff']);
     Route::delete('/remove-staff/{id}', [StaffController::class, 'removeStaff']);
+    Route::get('/get-user', [UserController::class, 'getUser']);
+    Route::post('/upload-photo', [FilesController::class, 'uploadPhoto']);
 });
