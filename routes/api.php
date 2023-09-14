@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\ProductController;
 use \App\Http\Controllers\AuthController;
+use \App\Http\Controllers\StaffController;
+use \App\Http\Controllers\FilesController;
+use \App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,9 +24,12 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 //protected routes
 Route::middleware('auth:sanctum')->group( function () {
-    // Route::get('products', ProductController::class);
-    // Route::get('product', [ProductController::class, 'show'])->name('product');
     Route::post('/logout',[AuthController::class, 'logout']);
     Route::get('product', [ProductController::class, 'show'])->name('product');
+    Route::get('/user-role', [AuthController::class, 'roles'])->name('roles');
+    Route::post('/create-staff', [StaffController::class, 'createStaff']);
+    Route::get('/get-staff', [StaffController::class, 'getUserStaff']);
+    Route::delete('/remove-staff/{id}', [StaffController::class, 'removeStaff']);
+    Route::get('/get-user', [UserController::class, 'getUser']);
+    Route::post('/upload-photo', [FilesController::class, 'uploadPhoto']);
 });
-

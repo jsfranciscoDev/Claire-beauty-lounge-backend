@@ -5,11 +5,14 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use App\Models\UserProfile;
 
 class AuthController extends Controller
 {
     //
     public function register(Request $request){
+       
         $fields = $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
@@ -19,14 +22,16 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $fields['name'],
             'email' => $fields['email'],
-            'password' => bcrypt($fields['password'])
+            'password' => bcrypt($fields['password']),
+            'role_id' =>$request['role_id']
         ]);
 
         $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'message' => 'success'
         ];
 
         return response($response, 201);
@@ -47,10 +52,13 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('myapptoken')->plainTextToken;
+        $role =  DB::table('user_roles')->where('id' , $user->role_id)->value('role');
 
         $response = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'message' => 'success',
+            'role' => $role
         ];
 
         return response($response, 201);
@@ -62,5 +70,11 @@ class AuthController extends Controller
         return [
             'message' => 'Logged Out!'
         ];
+    }
+
+    public function roles(){
+        $user = auth()->user();
+        $role =  DB::table('user_roles')->where('id' , $user->role_id)->value('role');
+        return $role;
     }
 }

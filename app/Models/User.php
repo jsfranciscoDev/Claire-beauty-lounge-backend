@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use App\Models\UserProfile;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -23,7 +23,8 @@ class User extends Authenticatable
         'password',
         'role_id',
         'profile_picture',
-        'display_image'
+        'display_image',
+        'contact'
     ];
 
     /**
@@ -51,4 +52,14 @@ class User extends Authenticatable
      * @var bool
      */
     protected $tokensExpireIn = false;
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class, 'user_id');
+    }
 }
