@@ -37,3 +37,6 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::post('/update-user', [UserController::class, 'updateUser']);
 });
+
+
+Route::get('/get-staff', [StaffController::class, 'getStaffDetails']);

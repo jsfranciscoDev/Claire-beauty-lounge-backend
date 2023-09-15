@@ -84,5 +84,30 @@ class StaffController extends Controller
           
         }
     }
+
+    public function getStaffDetails(){
+
+        $user = User::getQuery()
+        ->join('user_roles','users.role_id','user_roles.id')
+        ->join('user_profile','users.id','user_profile.user_id')
+        ->where('user_roles.id', 2)
+        ->select(
+            'users.id as id',
+            'users.name',
+            'users.email',
+            'user_roles.role',
+            'users.contact',
+            'users.bio',
+            'users.expertise',
+            'user_profile.path'
+        )->get();
+        
+        $response = [
+            'user' => $user,
+            'message' => 'success'
+        ];
+
+        return response($response, 201);
+    }
     
 }
