@@ -32,4 +32,8 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::delete('/remove-staff/{id}', [StaffController::class, 'removeStaff']);
     Route::get('/get-user', [UserController::class, 'getUser']);
     Route::post('/upload-photo', [FilesController::class, 'uploadPhoto']);
+
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
+
+    Route::post('/update-user', [UserController::class, 'updateUser']);
 });

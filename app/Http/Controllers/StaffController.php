@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\UserProfile;
 
 class StaffController extends Controller
 {
@@ -28,6 +29,12 @@ class StaffController extends Controller
             'contact' => $fields['contact'],
             'role_id' => 2,
         ]);
+
+     
+        $user_profile = new UserProfile();
+        $user_profile->user_id =  $user->id;
+        $user_profile->path = 'storage/user/profile.png'; 
+        $user_profile->save();
 
         $response = [
             'user' => $user,
