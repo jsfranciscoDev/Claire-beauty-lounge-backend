@@ -36,6 +36,14 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     Route::post('/update-user', [UserController::class, 'updateUser']);
+    Route::post('/user-time-in', [StaffController::class, 'timeIn']);
+
+    Route::get('/get-user-records', [StaffController::class, 'getUserRecords']);
+
+    Route::post('/get-user-dtr', [StaffController::class, 'getUserDTR']);
+
+    Route::get('/user-dropdown', [StaffController::class, 'getUserDropdown']);
+   
 });
 
 
