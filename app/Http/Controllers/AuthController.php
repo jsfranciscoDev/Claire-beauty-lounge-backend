@@ -26,6 +26,11 @@ class AuthController extends Controller
             'role_id' =>$request['role_id']
         ]);
 
+        $user_profile = new UserProfile();
+        $user_profile->user_id =  $user->id;
+        $user_profile->path = 'storage/user/profile.png'; 
+        $user_profile->save();
+
         $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
@@ -70,6 +75,35 @@ class AuthController extends Controller
         return [
             'message' => 'Logged Out!'
         ];
+    }
+
+    public function changePassword(Request $request){
+      
+
+        $user = auth()->user();
+
+        if($request->payload['new_password'] === $request->payload['password_confirmation']){
+            if (!Hash::check($request->payload['current_password'], $user->password)) {
+                return response()->json([
+                    'message' => 'Current password is incorrect',
+                    'status' => 'failed'
+                ]);
+               
+            }
+
+            $user->password = bcrypt($request->payload['new_password']);
+            $user->save();
+
+           
+            return response(['message' => 'Password changed successfully', 'status' => 'success'], 200);
+        }else{
+            return response()->json([
+                'message' => 'Password Missmatch',
+                'status' => 'failed'
+            ]);
+          
+        }
+    
     }
 
     public function roles(){

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('detail');
             $table->string('supplier_inforation');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

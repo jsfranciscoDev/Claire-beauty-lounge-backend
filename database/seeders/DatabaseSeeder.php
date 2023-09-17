@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\UserProfile;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +26,13 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+    
+        DB::table('user_profile')->insert([
+            'path' => 'storage/user/profile.png',
+            'user_id' => 1,
+            // Add other columns and their values as needed
+        ]);
+        
         foreach ($items as $item) {
             \App\Models\User::updateOrCreate([
                 'id' => $item['id'],

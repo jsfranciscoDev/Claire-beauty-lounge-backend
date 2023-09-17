@@ -23,7 +23,10 @@ return new class extends Migration
             $table->smallInteger('active')->default(1);
             $table->rememberToken();
             $table->timestamps();
-            $table->unsignedBigInteger('contact')->nullable(); 
+            $table->unsignedBigInteger('contact')->nullable();
+            $table->string('expertise')->nullable();
+            $table->string('bio')->nullable();
+            $table->softDeletes();
         });
 
         Schema::create('user_profile', function (Blueprint $table) {
@@ -31,6 +34,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->string('path')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
