@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Support\Str;
-
+if(env('CONFIG')){
 return [
 
+    
     /*
     |--------------------------------------------------------------------------
     | Default Database Connection Name
@@ -145,3 +146,5 @@ return [
     ],
 
 ];
+
+}

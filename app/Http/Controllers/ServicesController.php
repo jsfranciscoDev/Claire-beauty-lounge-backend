@@ -30,7 +30,7 @@ class ServicesController extends Controller
 
     public function getServices(){
 
-        $services = Services::getQuery()->paginate(10);
+        $services = Services::getQuery()->whereNull('deleted_at')->paginate(10);
        
         $response = [
             'services' => $services,
@@ -38,5 +38,22 @@ class ServicesController extends Controller
         ];
 
         return response($response, 201);
+    }
+
+    public function removeSevice($id){
+        $services = Services::find($id);
+        if($services){
+            $services->delete();
+            $response = [
+                'message' => 'success'
+            ];
+            return response($response, 201);
+        } else {
+            $response = [
+                'message' => 'delete failed!'
+            ];
+            return response($response, 404);
+          
+        }
     }
 }

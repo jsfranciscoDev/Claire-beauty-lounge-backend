@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
     //SERVICES
     Route::get('/get-services', [ServicesController::class, 'getServices']);
+    Route::delete('/remove-service/{id}', [ServicesController::class, 'removeSevice']);
    
 });
 
