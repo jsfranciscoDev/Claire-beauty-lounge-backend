@@ -12,9 +12,11 @@ use App\Models\DailyTimeinRecord;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
+
 class StaffController extends Controller
 {
     //
+    
 
     public function createStaff(Request $request){
 
@@ -53,6 +55,7 @@ class StaffController extends Controller
         $user = User::getQuery()
         ->join('user_roles','users.role_id','user_roles.id')
         ->where('user_roles.id', 2)
+        ->whereNull('users.deleted_at')
         ->select(
             'users.id as id',
             'users.name',
@@ -94,6 +97,7 @@ class StaffController extends Controller
         ->join('user_roles','users.role_id','user_roles.id')
         ->join('user_profile','users.id','user_profile.user_id')
         ->where('user_roles.id', 2)
+        ->whereNull('users.deleted_at')
         ->select(
             'users.id as id',
             'users.name',

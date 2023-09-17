@@ -25,7 +25,7 @@ class UserController extends Controller
 
     public function updateUser(Request $request){
         DB::beginTransaction();
-        \Log::info($request->all());
+      
         try {
             $user = User::find($request->input('id'));
             if ($user) {
