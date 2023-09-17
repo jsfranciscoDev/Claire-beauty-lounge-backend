@@ -7,7 +7,7 @@ use \App\Http\Controllers\AuthController;
 use \App\Http\Controllers\StaffController;
 use \App\Http\Controllers\FilesController;
 use \App\Http\Controllers\UserController;
-use \App\Http\Controllers\Services;
+use \App\Http\Controllers\ServicesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +46,10 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::get('/user-dropdown', [StaffController::class, 'getUserDropdown']);
 
-    Route::post('/create-services', [Services::class, 'createServices']);
+    Route::post('/create-services', [ServicesController::class, 'createServices']);
+
+    //SERVICES
+    Route::get('/get-services', [ServicesController::class, 'getServices']);
    
 });
 
