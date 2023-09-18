@@ -56,4 +56,24 @@ class ServicesController extends Controller
           
         }
     }
+
+    public function updateServices(Request $request){
+        DB::beginTransaction();
+
+        try {
+            $services = Services::find( $request->input('id'));
+            $services->name = $request->input('name');
+            $services->type = $request->input('Type'); // Assuming 'type' is a valid column in your table
+            $services->price = $request->input('price'); // Assuming 'price' is a valid column in your table
+            $services->details = $request->input('details'); // Assuming 'details' is a valid column in your table
+            $services->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Services Updated Successfully!', 'status' => 'success']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error Creating Services', 'status' => 'failed', 'error' => $e->getMessage()]);
+        }
+    }
 }

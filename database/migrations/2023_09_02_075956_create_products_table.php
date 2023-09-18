@@ -15,12 +15,14 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('services_id')->nullable();
             $table->string('name');
-            $table->string('batch_numbers');
+            $table->string('batch_number');
             $table->date('purchase_dates');
-            $table->date('expiration_dates');
-            $table->text('detail');
-            $table->string('supplier_inforation');
+            $table->date('expiration_date');
+            $table->decimal('price');
+            $table->integer('quantity');
+            $table->string('supplier_information');
             $table->timestamps();
             $table->softDeletes();
         });

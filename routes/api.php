@@ -27,7 +27,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 //protected routes
 Route::middleware('auth:sanctum')->group( function () {
     Route::post('/logout',[AuthController::class, 'logout']);
-    Route::get('product', [ProductController::class, 'show'])->name('product');
+  
     Route::get('/user-role', [AuthController::class, 'roles'])->name('roles');
     Route::post('/create-staff', [StaffController::class, 'createStaff']);
     Route::get('/get-staffs', [StaffController::class, 'getUserStaff']);
@@ -46,11 +46,20 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::get('/user-dropdown', [StaffController::class, 'getUserDropdown']);
 
-    Route::post('/create-services', [ServicesController::class, 'createServices']);
+  
 
     //SERVICES
+    Route::post('/create-services', [ServicesController::class, 'createServices']);
     Route::get('/get-services', [ServicesController::class, 'getServices']);
     Route::delete('/remove-service/{id}', [ServicesController::class, 'removeSevice']);
+    Route::put('/update-service', [ServicesController::class, 'updateServices']);
+
+
+    //PRODUCT
+    Route::post('/create-product', [ProductController::class, 'createProduct']);
+    Route::get('/get-products', [ProductController::class, 'getProducts']);
+    Route::delete('/remove-product/{id}', [ProductController::class, 'removeProduct']);
+    Route::put('/update-product', [ProductController::class, 'updateProduct']);
    
 });
 

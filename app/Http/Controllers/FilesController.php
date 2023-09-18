@@ -22,7 +22,7 @@ class FilesController extends Controller
                 'message' => 'Please select file.',
             ];
         }
-
+        
         $base64_image = $request->file;
 
         $image_64 = $request->file; //your base64 encoded data
