@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
     //SERVICES
     Route::post('/create-services', [ServicesController::class, 'createServices']);
-    Route::get('/get-services', [ServicesController::class, 'getServices']);
+
     Route::delete('/remove-service/{id}', [ServicesController::class, 'removeSevice']);
     Route::put('/update-service', [ServicesController::class, 'updateServices']);
 
@@ -60,8 +60,11 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('/get-products', [ProductController::class, 'getProducts']);
     Route::delete('/remove-product/{id}', [ProductController::class, 'removeProduct']);
     Route::put('/update-product', [ProductController::class, 'updateProduct']);
+
+    Route::get('/get-services-dropdown', [ServicesController::class, 'getServicesDropdown']);
+
    
 });
 
-
+Route::get('/get-services', [ServicesController::class, 'getServices']);
 Route::get('/get-staff', [StaffController::class, 'getStaffDetails']);

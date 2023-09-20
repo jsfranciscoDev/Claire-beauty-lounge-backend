@@ -76,4 +76,9 @@ class ServicesController extends Controller
             return response()->json(['message' => 'Error Creating Services', 'status' => 'failed', 'error' => $e->getMessage()]);
         }
     }
+
+    public function getServicesDropdown(){
+        $data = Services::select('id','name')->get();
+        return $data;
+    }   
 }
