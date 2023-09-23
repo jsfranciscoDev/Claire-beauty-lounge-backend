@@ -126,7 +126,7 @@ class ServicesController extends Controller
         $items = $request->get('service_items');
 
         foreach($items as $item){
-            
+            \Log::info($item);
             $exist = ServiceProducts::where('product_id', $item['product_id'])->where('services_id', $request->input('service_id'))->get();
             \Log::info($exist);
 
@@ -139,10 +139,9 @@ class ServicesController extends Controller
             $services_item->services_id = $request->input('service_id');
             $services_item->quantity = $item['quantity'];
             $services_item->save();
-
-            return response()->json(['message' => 'Services Product Added Successfully!', 'status' => 'success']);
-
         }
+
+        return response()->json(['message' => 'Services Product Added Successfully!', 'status' => 'success']);
        
     }
 
