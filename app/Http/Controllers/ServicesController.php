@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Services;
 use Illuminate\Support\Facades\DB;
+use App\Models\product;
+use App\Models\ServiceProducts;
 
 class ServicesController extends Controller
 {
@@ -30,8 +32,39 @@ class ServicesController extends Controller
 
     public function getServices(){
 
-        $services = Services::getQuery()->whereNull('deleted_at')->paginate(10);
-       
+        $services = Services::getQuery()
+        ->whereNull('services.deleted_at')
+        ->paginate(3);
+
+        $services->each(function($service) {
+           \Log::info(json_encode($service));
+           $items = ServiceProducts::getQuery()
+           ->join('products','products.id','services_products.product_id')
+           ->where('services_products.services_id',$service->id)
+           ->whereNull('services_products.deleted_at')
+           ->select(
+            'products.name as name',
+            'products.price as price',
+            'services_products.quantity as quantity',
+           )
+           ->get();
+
+           $total_item_price = 0;
+
+           foreach($items as $item){
+          
+            $total_item_price += $item->price * $item->quantity; // Accumulate total
+           
+           }
+      
+           $service->products = $items;
+           $service->total_product_price = $total_item_price;
+         
+           
+        });
+        
+      
+
         $response = [
             'services' => $services,
             'message' => 'success'
@@ -81,4 +114,53 @@ class ServicesController extends Controller
         $data = Services::select('id','name')->get();
         return $data;
     }   
+
+    public function getProductsDropDown(){
+        $data = product::select('id','name')->get();
+        return $data;
+    }
+
+    public function createServiceItems(Request $request){
+        \Log::info($request->all());
+
+        $items = $request->get('service_items');
+
+        foreach($items as $item){
+            
+            $exist = ServiceProducts::where('product_id', $item['product_id'])->where('services_id', $request->input('service_id'))->get();
+            \Log::info($exist);
+
+            if(!$exist->isEmpty()){
+                return response()->json(['message' => 'Some Products already added to this services! You must update the Quantity.', 'status' => 'failed']);
+            }
+
+            $services_item = new ServiceProducts();
+            $services_item->product_id = $item['product_id'];
+            $services_item->services_id = $request->input('service_id');
+            $services_item->quantity = $item['quantity'];
+            $services_item->save();
+
+            return response()->json(['message' => 'Services Product Added Successfully!', 'status' => 'success']);
+
+        }
+       
+    }
+
+    public function removeSeviceItems($id){
+        $servicesProducts = ServiceProducts::where('services_id', $id)->get();
+        \Log::info(json_encode($servicesProducts));
+        if($servicesProducts->isNotEmpty()){ // Check if the collection is not empty
+            ServiceProducts::where('services_id', $id)->delete(); // Delete all matching records
+            $response = [
+                'message' => 'success'
+            ];
+            return response($response, 201);
+        } else {
+            $response = [
+                'message' => 'delete failed!'
+            ];
+            return response($response, 404);
+        }
+    }
+    
 }

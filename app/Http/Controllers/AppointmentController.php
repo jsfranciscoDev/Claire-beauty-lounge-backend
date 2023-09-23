@@ -13,7 +13,7 @@ class AppointmentController extends Controller
     public function createAppointment(Request $request){
       
         DB::beginTransaction();
-
+        $user = Auth::user();
         $date = $request->input('date');
         $time = $request->input('time');
 
@@ -23,7 +23,7 @@ class AppointmentController extends Controller
         try {
             $appointment = new Appointment();
             $appointment->service_type = $request->input('service_id'); 
-            $appointment->user_id = $request->input('user_id');
+            $appointment->user_id = $user->id;
             $appointment->date = $date_time; 
             $appointment->status = 1; 
             $appointment->save();

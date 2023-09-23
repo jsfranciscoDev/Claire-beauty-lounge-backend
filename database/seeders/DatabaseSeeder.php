@@ -84,6 +84,9 @@ class DatabaseSeeder extends Seeder
             [
                 'detail' => 'Reschedule',
             ],
+            [
+                'detail' => 'Completed',
+            ],
         ];
 
         DB::table('appointment_status')->insert($status);

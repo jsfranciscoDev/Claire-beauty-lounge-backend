@@ -63,10 +63,14 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::put('/update-product', [ProductController::class, 'updateProduct']);
 
     Route::get('/get-services-dropdown', [ServicesController::class, 'getServicesDropdown']);
+    Route::get('/get-products-dropdown', [ServicesController::class, 'getProductsDropDown']);
 
     Route::post('/create-appointment', [AppointmentController::class, 'createAppointment']);
     Route::get('/get-appointment', [AppointmentController::class, 'getUserAppointment']);
-   
+
+    Route::post('/attach-service-items', [ServicesController::class, 'createServiceItems']);
+    Route::delete('/remove-service-items/{id}', [ServicesController::class, 'removeSeviceItems']);
+    
 });
 
 Route::get('/get-services', [ServicesController::class, 'getServices']);
