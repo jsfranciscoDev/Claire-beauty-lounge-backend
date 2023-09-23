@@ -15,6 +15,7 @@ class UserController extends Controller
     //
     public function getUser(){
         $user = Auth::user();
+    
         $user_profile =  $user->profile->path;
     
         return response()->json([
