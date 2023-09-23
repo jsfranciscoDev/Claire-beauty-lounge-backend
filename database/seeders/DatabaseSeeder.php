@@ -24,12 +24,26 @@ class DatabaseSeeder extends Seeder
                 'password' =>bcrypt('Admin@123'),
                 'role_id' =>1,
             ],
+            [
+                'id' => '2',
+                'name' => 'Steven Francisco',
+                'email'=>'user@gmail.com',
+                'password' =>bcrypt('123456'),
+                'role_id' =>3,
+            ],
         ];
+
+
 
     
         DB::table('user_profile')->insert([
             'path' => 'storage/user/profile.png',
             'user_id' => 1,
+            // Add other columns and their values as needed
+        ],
+        [
+            'path' => 'storage/user/profile.png',
+            'user_id' => 2,
             // Add other columns and their values as needed
         ]);
         
@@ -57,6 +71,22 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+        $status = [
+            [
+                'detail' => 'Pending',
+            ],
+            [
+                'detail' => 'Cancelled',
+            ],
+            [
+                'detail' => 'Approved',
+            ],
+            [
+                'detail' => 'Reschedule',
+            ],
+        ];
+
+        DB::table('appointment_status')->insert($status);
         // Use the insert method to insert multiple records
          DB::table('user_roles')->insert($roles);
     }

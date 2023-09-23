@@ -13,14 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('appointment', function (Blueprint $table) {
+        Schema::create('appointment_status', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('transaction_id')->nullable();
-            $table->unsignedBigInteger('service_type')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('status')->nullable();
-            $table->dateTime('date')->nullable();
-            $table->softDeletes();
+            $table->string('detail');
             $table->timestamps();
         });
     }
@@ -32,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('appointment');
+        Schema::dropIfExists('table_appointment_status');
     }
 };

@@ -8,6 +8,7 @@ use \App\Http\Controllers\StaffController;
 use \App\Http\Controllers\FilesController;
 use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\ServicesController;
+use \App\Http\Controllers\AppointmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +64,8 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::get('/get-services-dropdown', [ServicesController::class, 'getServicesDropdown']);
 
+    Route::post('/create-appointment', [AppointmentController::class, 'createAppointment']);
+    Route::get('/get-appointment', [AppointmentController::class, 'getUserAppointment']);
    
 });
 
