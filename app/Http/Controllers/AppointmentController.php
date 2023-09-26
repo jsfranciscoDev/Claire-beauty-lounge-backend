@@ -54,4 +54,37 @@ class AppointmentController extends Controller
 
         return response($response, 200);
     }
+
+    public function getAllAppointments(){
+       
+        $data = Appointment::getQuery()
+        ->join('users','users.id','appointment.user_id')
+        ->join('services','services.id','appointment.service_type')
+        ->join('appointment_status','appointment_status.id','appointment.status')
+        ->select(
+            'users.id',
+            'users.name as name',
+            'users.email',
+            'users.contact',
+            'services.name as service',
+            'appointment.status',
+            'appointment.date',
+            'appointment_status.detail'
+        )
+        ->whereIn('appointment.id', function($query) {
+            $query->select(DB::raw('MAX(id)'))
+                ->from('appointment')
+                ->groupBy('user_id');
+        })
+        ->paginate(5);
+    
+
+        $response = [
+            'appointment' => $data,
+            'message' => 'success'
+        ];
+
+        return response($response, 200);
+    }
+
 }

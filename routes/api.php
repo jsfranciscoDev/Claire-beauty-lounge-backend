@@ -70,6 +70,9 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::post('/attach-service-items', [ServicesController::class, 'createServiceItems']);
     Route::delete('/remove-service-items/{id}', [ServicesController::class, 'removeSeviceItems']);
+
+    Route::get('/get-all-appointments', [AppointmentController::class, 'getAllAppointments']);
+   
     
 });
 
