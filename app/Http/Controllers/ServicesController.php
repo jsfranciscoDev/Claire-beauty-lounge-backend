@@ -37,7 +37,7 @@ class ServicesController extends Controller
         ->paginate(3);
 
         $services->each(function($service) {
-           \Log::info(json_encode($service));
+         
            $items = ServiceProducts::getQuery()
            ->join('products','products.id','services_products.product_id')
            ->where('services_products.services_id',$service->id)
