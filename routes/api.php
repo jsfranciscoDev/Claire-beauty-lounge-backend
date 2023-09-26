@@ -7,6 +7,9 @@ use \App\Http\Controllers\AuthController;
 use \App\Http\Controllers\StaffController;
 use \App\Http\Controllers\FilesController;
 use \App\Http\Controllers\UserController;
+use \App\Http\Controllers\ServicesController;
+use \App\Http\Controllers\AppointmentController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,11 +28,53 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 //protected routes
 Route::middleware('auth:sanctum')->group( function () {
     Route::post('/logout',[AuthController::class, 'logout']);
-    Route::get('product', [ProductController::class, 'show'])->name('product');
+  
     Route::get('/user-role', [AuthController::class, 'roles'])->name('roles');
     Route::post('/create-staff', [StaffController::class, 'createStaff']);
-    Route::get('/get-staff', [StaffController::class, 'getUserStaff']);
+    Route::get('/get-staffs', [StaffController::class, 'getUserStaff']);
     Route::delete('/remove-staff/{id}', [StaffController::class, 'removeStaff']);
     Route::get('/get-user', [UserController::class, 'getUser']);
     Route::post('/upload-photo', [FilesController::class, 'uploadPhoto']);
+
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
+
+    Route::post('/update-user', [UserController::class, 'updateUser']);
+    Route::post('/user-time-in', [StaffController::class, 'timeIn']);
+
+    Route::get('/get-user-records', [StaffController::class, 'getUserRecords']);
+
+    Route::post('/get-user-dtr', [StaffController::class, 'getUserDTR']);
+
+    Route::get('/user-dropdown', [StaffController::class, 'getUserDropdown']);
+
+  
+
+    //SERVICES
+    Route::post('/create-services', [ServicesController::class, 'createServices']);
+
+    Route::delete('/remove-service/{id}', [ServicesController::class, 'removeSevice']);
+    Route::put('/update-service', [ServicesController::class, 'updateServices']);
+
+
+    //PRODUCT
+    Route::post('/create-product', [ProductController::class, 'createProduct']);
+    Route::get('/get-products', [ProductController::class, 'getProducts']);
+    Route::delete('/remove-product/{id}', [ProductController::class, 'removeProduct']);
+    Route::put('/update-product', [ProductController::class, 'updateProduct']);
+
+    Route::get('/get-services-dropdown', [ServicesController::class, 'getServicesDropdown']);
+    Route::get('/get-products-dropdown', [ServicesController::class, 'getProductsDropDown']);
+
+    Route::post('/create-appointment', [AppointmentController::class, 'createAppointment']);
+    Route::get('/get-appointment', [AppointmentController::class, 'getUserAppointment']);
+
+    Route::post('/attach-service-items', [ServicesController::class, 'createServiceItems']);
+    Route::delete('/remove-service-items/{id}', [ServicesController::class, 'removeSeviceItems']);
+
+    Route::get('/get-all-appointments', [AppointmentController::class, 'getAllAppointments']);
+   
+    
 });
+
+Route::get('/get-services', [ServicesController::class, 'getServices']);
+Route::get('/get-staff', [StaffController::class, 'getStaffDetails']);
