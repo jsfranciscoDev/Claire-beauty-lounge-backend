@@ -17,11 +17,13 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
+            'contact' => 'required|numeric|digits:11',
         ]);
 
         $user = User::create([
             'name' => $fields['name'],
             'email' => $fields['email'],
+            'contact' => $fields['contact'],
             'password' => bcrypt($fields['password']),
             'role_id' =>$request['role_id']
         ]);
@@ -58,12 +60,14 @@ class AuthController extends Controller
 
         $token = $user->createToken('myapptoken')->plainTextToken;
         $role =  DB::table('user_roles')->where('id' , $user->role_id)->value('role');
+        $staff_role =  DB::table('staff_roles')->where('id' , $user->staff_role)->value('role');
 
         $response = [
             'user' => $user,
             'token' => $token,
             'message' => 'success',
-            'role' => $role
+            'role' => $role,
+            'staff_role' => $staff_role
         ];
 
         return response($response, 201);

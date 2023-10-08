@@ -26,10 +26,28 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => '2',
-                'name' => 'Steven Francisco',
+                'name' => 'Lexi Lore',
                 'email'=>'user@gmail.com',
                 'password' =>bcrypt('123456'),
                 'role_id' =>3,
+            ],
+            [
+                'id' => '3',
+                'name' => 'John Doe',
+                'email'=>'staff1@gmail.com',
+                'contact'=> '09123456789',
+                'password' =>bcrypt('123456'),
+                'role_id' =>2,
+                'staff_role' =>1,
+            ],
+            [
+                'id' => '4',
+                'name' => 'Gojo Saturo',
+                'email'=>'staff2@gmail.com',
+                'contact'=> '09123456789',
+                'password' =>bcrypt('123456'),
+                'role_id' =>2,
+                'staff_role' =>2,
             ],
         ];
 
@@ -92,5 +110,21 @@ class DatabaseSeeder extends Seeder
         DB::table('appointment_status')->insert($status);
         // Use the insert method to insert multiple records
          DB::table('user_roles')->insert($roles);
+        
+
+        $items = [
+            [
+                'id' => '1',
+                'role' => 'System Administrator',
+                'role_description' => 'Manage System'
+            ],
+            [
+                'id' => '2',
+                'role' => 'Services',
+                'role_description' => 'Provide services to the clients.'
+            ],
+        ];
+
+        DB::table('staff_roles')->insert($items);
     }
 }

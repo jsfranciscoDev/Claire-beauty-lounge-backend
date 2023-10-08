@@ -25,6 +25,7 @@ class StaffController extends Controller
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
             'contact' => 'required|numeric|digits:11',
+            'staff_role' => 'required',
         ]);
 
         $user = User::create([
@@ -33,6 +34,7 @@ class StaffController extends Controller
             'password' => bcrypt($fields['password']),
             'contact' => $fields['contact'],
             'role_id' => 2,
+            'staff_role' => $fields['staff_role'],
         ]);
 
      
@@ -54,6 +56,7 @@ class StaffController extends Controller
         
         $user = User::getQuery()
         ->join('user_roles','users.role_id','user_roles.id')
+        ->join('staff_roles','users.staff_role','staff_roles.id')
         ->where('user_roles.id', 2)
         ->whereNull('users.deleted_at')
         ->select(
@@ -61,7 +64,9 @@ class StaffController extends Controller
             'users.name',
             'users.email',
             'user_roles.role',
-            'users.contact'
+            'users.contact',
+            'staff_roles.role_description as role_description',
+            'staff_roles.role as staff_role'
         )
         ->paginate(10);
        
@@ -95,8 +100,10 @@ class StaffController extends Controller
 
         $user = User::getQuery()
         ->join('user_roles','users.role_id','user_roles.id')
-        ->join('user_profile','users.id','user_profile.user_id')
+        ->leftJoin('user_profile','users.id','user_profile.user_id')
+        ->join('staff_roles','users.staff_role','staff_roles.id')
         ->where('user_roles.id', 2)
+        ->where('staff_roles.id', 2)
         ->whereNull('users.deleted_at')
         ->select(
             'users.id as id',
@@ -106,9 +113,13 @@ class StaffController extends Controller
             'users.contact',
             'users.bio',
             'users.expertise',
-            'user_profile.path'
+            'user_profile.path',
+            'staff_roles.role_description as role_description',
+            'staff_roles.role as staff_role'
         )->get();
         
+        \Log::info(json_encode($user));
+
         $response = [
             'user' => $user,
             'message' => 'success'
@@ -212,6 +223,23 @@ class StaffController extends Controller
 
         $response = [
             'user_dropdown' => $user_dropdown
+        ];
+
+        return response($response, 201);
+
+    }
+
+    public function getStaffServiceDropdown(){
+
+        $user_dropdown = User::getQuery()
+        ->join('staff_roles','staff_roles.id', 'users.staff_role')
+        ->select('users.name','users.id')
+        ->where('users.role_id', 2)
+        ->where('staff_roles.id', 2)
+        ->get();
+
+        $response = [
+            'staff_dropdown' => $user_dropdown
         ];
 
         return response($response, 201);

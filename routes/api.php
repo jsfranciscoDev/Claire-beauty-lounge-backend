@@ -72,9 +72,13 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::delete('/remove-service-items/{id}', [ServicesController::class, 'removeSeviceItems']);
 
     Route::get('/get-all-appointments', [AppointmentController::class, 'getAllAppointments']);
+    Route::post('/get-status-appointments', [AppointmentController::class, 'getStatusAppointments']);
+    Route::post('/update-status-appointment', [AppointmentController::class, 'updateAppointment']);
+    
    
     
 });
 
 Route::get('/get-services', [ServicesController::class, 'getServices']);
 Route::get('/get-staff', [StaffController::class, 'getStaffDetails']);
+Route::get('/book-staff-dropdown', [StaffController::class, 'getStaffServiceDropdown']);
