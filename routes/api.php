@@ -9,6 +9,7 @@ use \App\Http\Controllers\FilesController;
 use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\ServicesController;
 use \App\Http\Controllers\AppointmentController;
+use \App\Http\Controllers\SmsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,10 +76,13 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::post('/get-status-appointments', [AppointmentController::class, 'getStatusAppointments']);
     Route::post('/update-status-appointment', [AppointmentController::class, 'updateAppointment']);
     
-   
+    Route::get('/get-otp', [SmsController::class, 'sendSms']);
+    Route::post('/submit-user-otp', [SmsController::class, 'VerifyOtp']);
     
+
 });
 
 Route::get('/get-services', [ServicesController::class, 'getServices']);
 Route::get('/get-staff', [StaffController::class, 'getStaffDetails']);
 Route::get('/book-staff-dropdown', [StaffController::class, 'getStaffServiceDropdown']);
+
