@@ -14,46 +14,48 @@ class SmsController extends Controller
 {
     //
     public function sendSms(Request $request){
-        $client = new Client([
-            'base_uri' => "https://qyymgw.api.infobip.com/",
-            'headers' => [
-                'Authorization' => "App 9dd27810d14f0a083b6d34ac5c180389-9548592e-19ec-43b2-8932-06a91ebe8a17",
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ]
-        ]);
+        
+        $mobile = null;
+        $type = null;
+        $user = Auth::user();
+       
+       if($request->mobile_num){
+            $mobile = $request->mobile_num;
+            $type = "registration";
+       }else{
+            $mobile = '0'.$user->contact;
+            $type = "appointment";
+       }
 
         $otp = '';
         for ($i = 0; $i < 6; $i++) {
             $otp .= rand(1, 6);
         }
 
-        $response = $client->request(
-            'POST',
-            'sms/2/text/advanced',
-            [
-                RequestOptions::JSON => [
-                    'messages' => [
-                        [
-                            'from' => 'Steven',
-                            'destinations' => [
-                                ['to' => "+639763386855"]
-                            ],
-                            'text' => "Your OTP for verification is: $otp. Please use this code to complete the verification process. Note: This OTP is valid for 3 minutes. Do not share it with anyone.",
-                        ]
-                    ]
-                ],
-            ]
-        );
-
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
+        if($mobile){
+            $ch = curl_init();
+            $parameters = array(
+                'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
+                'number' => '09763386855',
+                'message' => 'Your OTP for verification is: '.  $otp . '. Please use this code to complete the verification process. Note: This OTP is valid for 3 minutes.',
+                'sendername' => 'SEMAPHORE'
+            );
+            curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
+            curl_setopt($ch, CURLOPT_POST, 1);
+    
+            //Send the parameters set above with the request
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    
+            // Receive response from server
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $output = curl_exec($ch);
+            curl_close($ch);
+        }
+       
         
-        $user = Auth::user();
-
         $otpData = new Otp();
-        $otpData->user_id = $user->id; 
         $otpData->otp = $otp; 
+        $otpData->type = $type;
         $otpData->expiration = Carbon::now()->addMinutes(3); 
         $otpData->save();
 
@@ -63,10 +65,9 @@ class SmsController extends Controller
     }
 
     public function VerifyOtp(Request $request){
-        \Log::info($request->all());
+        
         $otp = Otp::where('id', $request->get('otp_id'))->first();
-        \Log::info(json_encode($otp));
-        \Log::info($otp->expiration);
+     
         if ($otp) {
             $expirationTime = new Carbon($otp->expiration);
         
@@ -77,13 +78,22 @@ class SmsController extends Controller
                     'title' => 'Verification Failed',
                 ]);
             } else {
-                \Log::info('hinde pa expired');
+               
                 if($otp->otp == $request->get('user_otp')){
-                    return response()->json([
-                        'status' =>  'verified',
-                        'message' =>  'The appointment request has been submitted. Please await confirmation from the administrator. Thank you for your patience!',
-                        'title' => 'Verification Success',
-                    ]);
+                    if($otp->type == 'appointment'){
+                        return response()->json([
+                            'status' =>  'verified',
+                            'message' =>  'The appointment request has been submitted. Please await confirmation from the administrator. Thank you for your patience!',
+                            'title' => 'Verification Success',
+                        ]);
+                    }else if($otp->type == 'registration'){
+                        return response()->json([
+                            'status' =>  'verified',
+                            'message' =>  'Congratulations! Your registration is successful. You can now proceed to login.',
+                            'title' => 'Verification Success',
+                        ]);
+                    }
+                   
                 }else{
                     return response()->json([
                         'status' =>  'failed',

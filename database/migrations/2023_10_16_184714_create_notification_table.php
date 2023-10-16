@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('otp', function (Blueprint $table) {
+        Schema::create('notification', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('otp')->nullable();
-            $table->string('type')->nullable();
-            $table->timestamp('expiration')->nullable(); // This is the corrected line
-            $table->timestamps();   
+            $table->unsignedInteger('quantity')->nullable();
+            $table->unsignedBigInteger('mobile_number')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('otp');
+        Schema::dropIfExists('notification');
     }
 };

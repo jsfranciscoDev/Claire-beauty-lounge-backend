@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Otp extends Model
+class Notifications extends Model
 {
     use HasFactory;
 
-    protected $table = 'otp';
+    protected $table = 'notification';
 
     protected $fillable = [
-        'otp',
-        'expiration',
-        'type'
+        'quantity',
+        'mobile_number'
     ];
 }
