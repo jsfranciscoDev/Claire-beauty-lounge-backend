@@ -36,7 +36,7 @@ class SmsController extends Controller
             $ch = curl_init();
             $parameters = array(
                 'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
-                'number' => '09763386855',
+                'number' => $mobile,
                 'message' => 'Your OTP for verification is: '.  $otp . '. Please use this code to complete the verification process. Note: This OTP is valid for 3 minutes.',
                 'sendername' => 'SEMAPHORE'
             );

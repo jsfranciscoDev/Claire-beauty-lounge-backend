@@ -10,6 +10,7 @@ use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\ServicesController;
 use \App\Http\Controllers\AppointmentController;
 use \App\Http\Controllers\SmsController;
+use \App\Http\Controllers\NotificationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,8 +79,10 @@ Route::middleware('auth:sanctum')->group( function () {
     
     Route::post('/appointment-otp', [SmsController::class, 'sendSms']);
     Route::post('/submit-appointment-otp', [SmsController::class, 'VerifyOtp']);
-    
 
+    Route::post('/update-notifications', [NotificationsController::class, 'UpdateNotification']);
+    Route::get('/get-notifications', [NotificationsController::class, 'NotificationData']);
+    
 });
 
 Route::get('/get-services', [ServicesController::class, 'getServices']);
