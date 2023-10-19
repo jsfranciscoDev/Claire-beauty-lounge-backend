@@ -66,7 +66,5 @@ class CheckStock extends Command
         }
 
         \Log::info('send notification');
-        // $this->info(json_encode( $output));
-
     }
 }

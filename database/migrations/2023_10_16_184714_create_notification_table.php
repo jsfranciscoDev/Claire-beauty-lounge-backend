@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('notification', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('quantity')->nullable();
-            $table->unsignedBigInteger('mobile_number')->nullable();
+            $table->unsignedBigInteger('phone_number')->nullable();
             $table->timestamps();
         });
     }
