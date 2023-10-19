@@ -85,6 +85,8 @@ Route::middleware('auth:sanctum')->group( function () {
     
 });
 
+
+
 Route::get('/get-services', [ServicesController::class, 'getServices']);
 Route::get('/get-staff', [StaffController::class, 'getStaffDetails']);
 Route::get('/book-staff-dropdown', [StaffController::class, 'getStaffServiceDropdown']);

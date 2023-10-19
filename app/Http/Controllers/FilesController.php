@@ -7,14 +7,17 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserProfile;
+use Illuminate\Support\Carbon;
 
 class FilesController extends Controller
 {
     //
+    
     function uploadPhoto(Request $request)
     {   
         $user = auth()->user();
-    
+        $timestamp = Carbon::now()->timestamp;
+
         if(!$request->file){
             return [
                 'status' => false,
@@ -35,11 +38,14 @@ class FilesController extends Controller
 
         $image = str_replace(' ', '+', $image); 
 
-        $imageName =  $user->name.'.'.$extension;
+        $imageName = Str::random(10).'-'.$timestamp.'.'.$extension;
 
         Storage::disk('public')->put('user/' . $imageName, base64_decode($image));
 
         $image_path = 'storage/user/'. $imageName;
+
+        // when hosted should add public/
+        // $image_path = 'public/storage/user/'. $imageName;
 
         $user_profile = new UserProfile();
         $user_profile = UserProfile::updateOrCreate([

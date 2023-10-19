@@ -33,7 +33,7 @@ class AuthController extends Controller
         $user_profile->path = 'storage/user/profile.png'; 
         $user_profile->save();
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        // $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
             'user' => $user,
