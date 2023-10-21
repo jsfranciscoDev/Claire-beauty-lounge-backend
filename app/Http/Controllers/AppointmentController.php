@@ -22,7 +22,7 @@ class AppointmentController extends Controller
 
         try {
             $appointment = new Appointment();
-            $appointment->service_type = $request->input('service_id'); 
+            $appointment->service_id = $request->input('service_id'); 
             $appointment->user_id = $user->id;
             $appointment->date = $date_time; 
             $appointment->status = 1; 
@@ -146,13 +146,23 @@ class AppointmentController extends Controller
             \Log::info(json_encode($appointment));
             $appointment->status = $request->input('status');
             $appointment->save();
-
             DB::commit();
+
+
+            $appointment_status = Appointment::find($request->input('id'));
+            \Log::info(json_encode($appointment_status));
+            if($appointment_status->status == 5){
+                $this->adjustProductQuantity( $appointment_status->id);
+            }
             return response()->json(['message' => 'Appointment Updated Successfully!', 'status' => 'success']);
             
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Error Updating Appointment', 'status' => 'failed', 'error' => $e->getMessage()]);
         }
+    }
+
+    public function adjustProductQuantity($id){
+        \Log::info('bawas item!');
     }
 }

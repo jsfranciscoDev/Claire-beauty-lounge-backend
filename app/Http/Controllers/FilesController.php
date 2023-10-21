@@ -17,7 +17,7 @@ class FilesController extends Controller
     {   
         $user = auth()->user();
         $timestamp = Carbon::now()->timestamp;
-
+      
         if(!$request->file){
             return [
                 'status' => false,
@@ -42,10 +42,13 @@ class FilesController extends Controller
 
         Storage::disk('public')->put('user/' . $imageName, base64_decode($image));
 
-        $image_path = 'storage/user/'. $imageName;
-
-        // when hosted should add public/
-        // $image_path = 'public/storage/user/'. $imageName;
+        \Log::info( env('IMAGE_PATH'));
+        if( env('IMAGE_PATH') === 'LOCAL'){
+            $image_path = 'storage/user/'. $imageName;
+        }else{
+            // when hosted should add public/
+            $image_path = 'storage/app/public/user/'. $imageName;
+        }
 
         $user_profile = new UserProfile();
         $user_profile = UserProfile::updateOrCreate([

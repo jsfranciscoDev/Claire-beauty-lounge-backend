@@ -42,6 +42,7 @@ class ServicesController extends Controller
            ->join('products','products.id','services_products.product_id')
            ->where('services_products.services_id',$service->id)
            ->whereNull('services_products.deleted_at')
+           ->whereNull('products.deleted_at')
            ->select(
             'products.name as name',
             'products.price as price',

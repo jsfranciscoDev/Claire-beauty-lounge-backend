@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('transaction_id')->nullable();
             $table->unsignedBigInteger('staff_id')->nullable();
-            $table->unsignedBigInteger('service_type')->nullable();
+            $table->unsignedBigInteger('service_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('status')->nullable();
             $table->dateTime('date')->nullable();
