@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Services;
 
 class AppointmentController extends Controller
 {
@@ -43,7 +44,7 @@ class AppointmentController extends Controller
         $user = Auth::user();
 
         $data = Appointment::getQuery()
-        ->join('services','services.id','appointment.service_type')
+        ->join('services','services.id','appointment.service_id')
         ->join('appointment_status','appointment.status','appointment_status.id')
         ->where('appointment.user_id', $user->id)
         ->select(           
@@ -70,7 +71,7 @@ class AppointmentController extends Controller
        
         $data = Appointment::getQuery()
         ->join('users','users.id','appointment.user_id')
-        ->join('services','services.id','appointment.service_type')
+        ->join('services','services.id','appointment.service_id')
         ->join('appointment_status','appointment_status.id','appointment.status')
         ->select(
             'users.id',
@@ -105,7 +106,7 @@ class AppointmentController extends Controller
        
         $data = Appointment::getQuery()
         ->join('users','users.id','appointment.user_id')
-        ->join('services','services.id','appointment.service_type')
+        ->join('services','services.id','appointment.service_id')
         ->join('appointment_status','appointment_status.id','appointment.status')
         ->select(
             'users.id',
@@ -116,7 +117,8 @@ class AppointmentController extends Controller
             'appointment.id as appointment_id',
             'appointment.status',
             'appointment.date',
-            'appointment_status.detail'
+            'appointment_status.detail',
+            \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name')
         )
         ->where('appointment.status', $request->get('status'))
         // ->whereIn('appointment.id', function($query) {
@@ -164,5 +166,26 @@ class AppointmentController extends Controller
 
     public function adjustProductQuantity($id){
         \Log::info('bawas item!');
+
+        $services = Services::getQuery()
+        ->whereNull('services.deleted_at')
+        ->where('id', $id);
+
+        $services->each(function($service) {
+         
+           $items = ServiceProducts::getQuery()
+           ->join('products','products.id','services_products.product_id')
+           ->where('services_products.services_id',$id )
+           ->whereNull('services_products.deleted_at')
+           ->whereNull('products.deleted_at')
+           ->select(
+            'products.name as name',
+            'products.price as price',
+            'services_products.quantity as quantity',
+           )
+           ->get();
+         
+           \Log::info(json_encode($items));
+        });
     }
 }
