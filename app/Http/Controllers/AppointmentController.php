@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Services;
+use App\Models\ServiceProducts;
+use App\Models\product;
 
 class AppointmentController extends Controller
 {
@@ -139,7 +141,6 @@ class AppointmentController extends Controller
 
 
     public function updateAppointment(Request $request){
-        \Log::info($request->all());
 
         DB::beginTransaction();
 
@@ -152,7 +153,7 @@ class AppointmentController extends Controller
 
 
             $appointment_status = Appointment::find($request->input('id'));
-            \Log::info(json_encode($appointment_status));
+
             if($appointment_status->status == 5){
                 $this->adjustProductQuantity( $appointment_status->id);
             }
@@ -165,27 +166,35 @@ class AppointmentController extends Controller
     }
 
     public function adjustProductQuantity($id){
-        \Log::info('bawas item!');
-
-        $services = Services::getQuery()
-        ->whereNull('services.deleted_at')
-        ->where('id', $id);
-
-        $services->each(function($service) {
-         
-           $items = ServiceProducts::getQuery()
-           ->join('products','products.id','services_products.product_id')
-           ->where('services_products.services_id',$id )
-           ->whereNull('services_products.deleted_at')
-           ->whereNull('products.deleted_at')
-           ->select(
-            'products.name as name',
-            'products.price as price',
-            'services_products.quantity as quantity',
-           )
-           ->get();
-         
-           \Log::info(json_encode($items));
-        });
+        $services = Services::where('id', $id)->first(); // Assuming you only need one service
+        if($services) {
+            $items = ServiceProducts::join('products','products.id','services_products.product_id')
+                ->where('services_products.services_id', $id)
+                ->whereNull('services_products.deleted_at')
+                ->whereNull('products.deleted_at')
+                ->select(
+                    'products.id',
+                    'products.name as name',
+                    'products.price as price',
+                    'services_products.quantity as quantity'
+                )
+                ->get();    
+                
+               if($items->isNotEmpty()){
+                    foreach($items as $item){
+                        foreach($items as $item){
+                            DB::beginTransaction();
+                            try {
+                                product::where('id', $item->id)->decrement('quantity', $item->quantity);
+                                DB::commit();
+                            } catch (\Exception $e) {
+                                DB::rollback();
+                                // Handle the exception (e.g., log it or display an error message)
+                            }
+                        }
+                    }
+               }
+        }
+       
     }
 }
