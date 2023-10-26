@@ -182,15 +182,13 @@ class AppointmentController extends Controller
                 
                if($items->isNotEmpty()){
                     foreach($items as $item){
-                        foreach($items as $item){
-                            DB::beginTransaction();
-                            try {
-                                product::where('id', $item->id)->decrement('quantity', $item->quantity);
-                                DB::commit();
-                            } catch (\Exception $e) {
-                                DB::rollback();
-                                // Handle the exception (e.g., log it or display an error message)
-                            }
+                        DB::beginTransaction();
+                        try {
+                            product::where('id', $item->id)->decrement('quantity', $item->quantity);
+                            DB::commit();
+                        } catch (\Exception $e) {
+                            DB::rollback();
+                            // Handle the exception (e.g., log it or display an error message)
                         }
                     }
                }

@@ -42,12 +42,13 @@ class FilesController extends Controller
 
         Storage::disk('public')->put('user/' . $imageName, base64_decode($image));
 
-        \Log::info( env('IMAGE_PATH'));
-        if( env('IMAGE_PATH') === 'LOCAL'){
-            $image_path = 'storage/user/'. $imageName;
-        }else{
+        $imagePathConfig = config('imagepath.image_path');
+
+        if ($imagePathConfig === 'LOCAL') {
+            $image_path = 'storage/user/' . $imageName;
+        } else {
             // when hosted should add public/
-            $image_path = 'storage/app/public/user/'. $imageName;
+            $image_path = 'storage/app/public/user/' . $imageName;
         }
 
         $user_profile = new UserProfile();

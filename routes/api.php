@@ -53,9 +53,15 @@ Route::middleware('auth:sanctum')->group( function () {
 
     //SERVICES
     Route::post('/create-services', [ServicesController::class, 'createServices']);
+    Route::post('/create-services-category', [ServicesController::class, 'createServiceCategory']);
+    Route::get('/get-service-category', [ServicesController::class, 'getServiceCategory']);
+    
 
     Route::delete('/remove-service/{id}', [ServicesController::class, 'removeSevice']);
+    Route::delete('/remove-service-category/{id}', [ServicesController::class, 'removeSeviceCategory']);
     Route::put('/update-service', [ServicesController::class, 'updateServices']);
+
+    Route::put('/update-service-category', [ServicesController::class, 'updateServicesCategory']);
 
 
     //PRODUCT

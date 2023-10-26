@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Services;
+use App\Models\ServiceCategory;
 use Illuminate\Support\Facades\DB;
 use App\Models\product;
 use App\Models\ServiceProducts;
@@ -160,6 +161,70 @@ class ServicesController extends Controller
                 'message' => 'delete failed!'
             ];
             return response($response, 404);
+        }
+    }
+
+    public function createServiceCategory(Request $request) {
+        DB::beginTransaction();
+        // test git
+        try {
+            $services = new ServiceCategory();
+            $services->name = $request->input('name');
+            $services->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Services Category Created Successfully!', 'status' => 'success']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error Creating Services Category', 'status' => 'failed', 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function getServiceCategory(){
+
+        $services = ServiceCategory::getQuery()
+        ->paginate(5);
+
+        $response = [
+            'services' => $services,
+            'message' => 'success'
+        ];
+
+        return response($response, 201);
+    }
+
+    public function removeSeviceCategory($id){
+        $services = ServiceCategory::find($id);
+        if($services){
+            $services->delete();
+            $response = [
+                'message' => 'success'
+            ];
+            return response($response, 201);
+        } else {
+            $response = [
+                'message' => 'delete failed!'
+            ];
+            return response($response, 404);
+          
+        }
+    }
+
+    public function updateServicesCategory(Request $request){
+        DB::beginTransaction();
+
+        try {
+            $services = ServiceCategory::find( $request->input('id'));
+            $services->name = $request->input('name');
+            $services->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Services Category Updated Successfully!', 'status' => 'success']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error Creating Services Category', 'status' => 'failed', 'error' => $e->getMessage()]);
         }
     }
     
