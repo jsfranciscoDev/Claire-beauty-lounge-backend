@@ -15,8 +15,8 @@ class Services extends Model
     protected $fillable = [
         'product_id', 
         'transaction_id',
+        'service_category',
         'name',
-        'type',
         'price',
         'details'
     ];

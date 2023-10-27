@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\UserProfile;
+use App\Models\StaffServices;
 use App\Models\DailyTimeinRecord;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -66,9 +67,23 @@ class StaffController extends Controller
             'user_roles.role',
             'users.contact',
             'staff_roles.role_description as role_description',
-            'staff_roles.role as staff_role'
+            'staff_roles.role as staff_role',
         )
         ->paginate(10);
+
+        $user->each(function($user) {
+         
+            $services = StaffServices::getQuery()
+            ->where('staff_services.user_id',$user->id)
+            ->join('service_category','service_category.id','staff_services.service_category_id')
+            ->select(
+             'service_category.name as service_category',
+            )
+            ->distinct()
+            ->get();
+
+            $user->services = $services;
+         });
        
         $response = [
             'user' => $user,
@@ -95,6 +110,16 @@ class StaffController extends Controller
           
         }
     }
+   
+    public function removeStaffServices($id){
+        $services = StaffServices::where('user_id', $id)->delete();
+        $response = [
+            'status' => 'success',
+            'message' => 'Staff Services Delete Successfully'
+        ];
+
+        return response($response, 201);
+    }
 
     public function getStaffDetails(){
 
@@ -118,8 +143,20 @@ class StaffController extends Controller
             'staff_roles.role as staff_role'
         )->get();
         
-        \Log::info(json_encode($user));
+        $user->each(function($user) {
+            $services = StaffServices::getQuery()
+            ->where('staff_services.user_id',$user->id)
+            ->join('service_category','service_category.id','staff_services.service_category_id')
+            ->select(
+                'service_category.name as service_category',
+            )
+            ->distinct()
+            ->get();
 
+            $user->services = $services;
+        });
+
+     
         $response = [
             'user' => $user,
             'message' => 'success'
@@ -229,14 +266,24 @@ class StaffController extends Controller
 
     }
 
-    public function getStaffServiceDropdown(){
+    public function getStaffServiceDropdown(Request $request){
 
-        $user_dropdown = User::getQuery()
-        ->join('staff_roles','staff_roles.id', 'users.staff_role')
-        ->select('users.name','users.id')
-        ->where('users.role_id', 2)
-        ->where('staff_roles.id', 2)
-        ->get();
+        if($request->get('service_id')){
+            $user_dropdown = User::getQuery()
+            ->join('staff_services','staff_services.user_id', 'users.id')
+            ->join('services','services.service_category', 'staff_services.service_category_id')
+            ->where('services.id', $request->get('service_id'))
+            ->select('users.name','users.id')
+            ->get();
+        }else{
+            $user_dropdown = User::getQuery()
+            ->join('staff_roles','staff_roles.id', 'users.staff_role')
+            ->select('users.name','users.id')
+            ->where('users.role_id', 2)
+            ->where('staff_roles.id', 2)
+            ->get();
+        }
+       
 
         $response = [
             'staff_dropdown' => $user_dropdown
@@ -244,5 +291,27 @@ class StaffController extends Controller
 
         return response($response, 201);
 
+    }
+
+    public function AssignStaffServices(Request $request){
+        $services = StaffServices::where('user_id', $request->input('user_id'))->delete();
+        DB::beginTransaction();
+        try {
+
+            foreach($request->input('services') as $service){
+                \Log::info($service);
+                $staffservices = new StaffServices();
+                $staffservices->user_id = $request->input('user_id');
+                $staffservices->service_category_id = $service;
+                $staffservices->save();
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Staff Services Assigned Successfully!', 'status' => 'success']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error Assigning Staff Services', 'status' => 'failed', 'error' => $e->getMessage()]);
+        }
     }
 }

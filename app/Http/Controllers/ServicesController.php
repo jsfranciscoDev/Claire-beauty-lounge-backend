@@ -17,7 +17,7 @@ class ServicesController extends Controller
         try {
             $services = new Services();
             $services->name = $request->input('name');
-            $services->type = $request->input('Type'); // Assuming 'type' is a valid column in your table
+            $services->service_category = $request->input('service_category'); // Assuming 'type' is a valid column in your table
             $services->price = $request->input('price'); // Assuming 'price' is a valid column in your table
             $services->details = $request->input('details'); // Assuming 'details' is a valid column in your table
             $services->save();
@@ -34,7 +34,12 @@ class ServicesController extends Controller
     public function getServices(){
 
         $services = Services::getQuery()
+        ->join('service_category', 'service_category.id', 'services.service_category')
         ->whereNull('services.deleted_at')
+        ->select(
+            'services.*',
+            'service_category.name as category',
+        )
         ->paginate(3);
 
         $services->each(function($service) {
@@ -228,4 +233,8 @@ class ServicesController extends Controller
         }
     }
     
+    public function getServiceCategoryDropdown(Request $request){
+        $data = ServiceCategory::select('id','name')->get();
+        return $data;
+    }
 }

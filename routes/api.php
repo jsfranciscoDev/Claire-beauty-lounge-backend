@@ -62,8 +62,8 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::put('/update-service', [ServicesController::class, 'updateServices']);
 
     Route::put('/update-service-category', [ServicesController::class, 'updateServicesCategory']);
-
-
+    Route::get('/get-service-category-dropdown', [ServicesController::class, 'getServiceCategoryDropdown']);
+   
     //PRODUCT
     Route::post('/create-product', [ProductController::class, 'createProduct']);
     Route::get('/get-products', [ProductController::class, 'getProducts']);
@@ -88,14 +88,17 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::post('/update-notifications', [NotificationsController::class, 'UpdateNotification']);
     Route::get('/get-notifications', [NotificationsController::class, 'NotificationData']);
-    
+   
+
+    Route::post('/assign-staff-services', [StaffController::class, 'AssignStaffServices']);
+    Route::delete('/remove-staff-services/{id}', [StaffController::class, 'removeStaffServices']);
 });
 
 
 
 Route::get('/get-services', [ServicesController::class, 'getServices']);
 Route::get('/get-staff', [StaffController::class, 'getStaffDetails']);
-Route::get('/book-staff-dropdown', [StaffController::class, 'getStaffServiceDropdown']);
+Route::post('/book-staff-dropdown', [StaffController::class, 'getStaffServiceDropdown']);
 
 Route::post('/get-otp', [SmsController::class, 'sendSms']);
 Route::post('/submit-user-otp', [SmsController::class, 'VerifyOtp']);
