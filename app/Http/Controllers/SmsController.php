@@ -9,6 +9,7 @@ use App\Models\Otp;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\RequestOptions;
 use Carbon\Carbon;
+use App\Models\User;
 
 class SmsController extends Controller
 {
@@ -65,9 +66,9 @@ class SmsController extends Controller
     }
 
     public function VerifyOtp(Request $request){
-        
+        \Log::info($request->all());
         $otp = Otp::where('id', $request->get('otp_id'))->first();
-     
+        \Log::info(json_encode($otp));
         if ($otp) {
             $expirationTime = new Carbon($otp->expiration);
         
@@ -92,6 +93,12 @@ class SmsController extends Controller
                             'message' =>  'Congratulations! Your registration is successful. You can now proceed to login.',
                             'title' => 'Verification Success',
                         ]);
+                    }else if($otp->type == 'recovery'){
+                        return response()->json([
+                            'status' =>  'verified',
+                            'message' =>  'Verified. You can now proceed change password.',
+                            'title' => 'Verification Success',
+                        ]);
                     }
                    
                 }else{
@@ -109,6 +116,58 @@ class SmsController extends Controller
                 'title' => 'OTP Does not exist',
             ]);
         }
+    }
+
+    public function getRecoveryOTP(Request $request){
+      
+
+        $data = User::find($request->get('user_id'));
+        $mobile = null;
+        $type = null;
+
+        if($data->contact){
+            $mobile = '0'.$data->contact;
+            $type = "recovery";
+        }
+
+        \Log::info($mobile);
+
+        $otp = '';
+
+        for ($i = 0; $i < 6; $i++) {
+            $otp .= rand(1, 6);
+        }
+
+        if($mobile){
+            $ch = curl_init();
+            $parameters = array(
+                'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
+                'number' => $mobile,
+                'message' => ''.  $otp . ' is your Claire Beauty Lounge reset code. Please use this code to complete the verification process. Note: This OTP is valid for 3 minutes.',
+                'sendername' => 'SEMAPHORE'
+            );
+            curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
+            curl_setopt($ch, CURLOPT_POST, 1);
+    
+            //Send the parameters set above with the request
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    
+            // Receive response from server
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $output = curl_exec($ch);
+            curl_close($ch);
+        }
+       
+        
+        $otpData = new Otp();
+        $otpData->otp = $otp; 
+        $otpData->type = $type;
+        $otpData->expiration = Carbon::now()->addMinutes(3); 
+        $otpData->save();
+
+        return response()->json([
+            'otp_id' =>  $otpData->id,
+        ]);
     }
     
 }

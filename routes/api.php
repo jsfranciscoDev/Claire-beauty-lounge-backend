@@ -102,3 +102,10 @@ Route::post('/book-staff-dropdown', [StaffController::class, 'getStaffServiceDro
 
 Route::post('/get-otp', [SmsController::class, 'sendSms']);
 Route::post('/submit-user-otp', [SmsController::class, 'VerifyOtp']);
+
+
+Route::post('/submit-recovery-email', [AuthController::class, 'recoverAccount']);
+
+Route::post('/get-recovery-otp', [SmsController::class, 'getRecoveryOTP']);
+
+Route::post('/recovery-change-password', [AuthController::class, 'recoveryChangePassword']);

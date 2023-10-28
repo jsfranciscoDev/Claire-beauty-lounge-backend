@@ -115,4 +115,68 @@ class AuthController extends Controller
         $role =  DB::table('user_roles')->where('id' , $user->role_id)->value('role');
         return $role;
     }
+
+    public function recoverAccount(Request $request){
+ 
+
+        $data = User::where('email', $request->get('user_email'))->first();
+
+        if(!is_null($data)){
+
+            $contact = $data->contact;
+
+            if(!$contact){
+                return response()->json([
+                    'message' => 'Account lacks a recovery contact Number. Please contact the administrator.',
+                    'status' => 'failed',
+                ]);
+            }
+         
+            $contactNumber = '0' . $contact;
+
+            // Get the length of the string
+            $length = strlen($contactNumber);
+
+            // Calculate the number of middle digits to replace with asterisks
+            $numAsterisks = $length - 8;
+
+            // Create a string of asterisks
+            $asterisks = str_repeat('*', $numAsterisks);
+
+            // Replace the middle digits with asterisks
+            $contactNumber = substr_replace($contactNumber, $asterisks, 4, -3);
+         
+            return response()->json([
+                'message' => 'Verify your account!',
+                'status' => 'success',
+                'contact' =>  $contactNumber,
+                'user_id' => $data->id,
+            ]);
+
+        }else{
+            return response()->json([
+                'message' => 'Email does not Exist!',
+                'status' => 'failed'
+            ]);
+        }
+       
+    }
+
+    public function recoveryChangePassword(Request $request){
+
+        $user =  User::find($request->payload['user_id']);
+        if($request->payload['password'] === $request->payload['confirm_password']){
+           
+            $user->password = bcrypt($request->payload['password']);
+            $user->save();
+
+            return response(['message' => 'Password changed successfully', 'status' => 'success'], 200);
+        }else{
+            return response()->json([
+                'message' => 'Password Missmatch',
+                'status' => 'failed'
+            ]);
+          
+        }
+    }
 }

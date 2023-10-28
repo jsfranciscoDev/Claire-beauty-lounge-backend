@@ -166,8 +166,10 @@ class StaffController extends Controller
     }
     
     public function timeIn(Request $request){
-   
+        \Log::info($request->all());
+        \Log::info(date('Y-m-d', strtotime($request->input('date'))));
         $currentDate = \Carbon\Carbon::now();
+        \Log::info($currentDate);
 
   
         try {
