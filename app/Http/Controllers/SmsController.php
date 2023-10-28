@@ -130,8 +130,6 @@ class SmsController extends Controller
             $type = "recovery";
         }
 
-        \Log::info($mobile);
-
         $otp = '';
 
         for ($i = 0; $i < 6; $i++) {

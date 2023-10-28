@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Models\Services;
 use App\Models\ServiceProducts;
 use App\Models\product;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
+use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
@@ -146,7 +149,7 @@ class AppointmentController extends Controller
 
         try {
             $appointment = Appointment::find($request->input('id'));
-            \Log::info(json_encode($appointment));
+           
             $appointment->status = $request->input('status');
             $appointment->save();
             DB::commit();
@@ -156,7 +159,10 @@ class AppointmentController extends Controller
 
             if($appointment_status->status == 5){
                 $this->adjustProductQuantity( $appointment_status->id);
+            }else if($appointment_status->status == 2 || $appointment_status->status == 3 || $appointment_status->status == 4){
+                $this->notifyuser($appointment);
             }
+            
             return response()->json(['message' => 'Appointment Updated Successfully!', 'status' => 'success']);
             
         } catch (\Exception $e) {
@@ -192,6 +198,47 @@ class AppointmentController extends Controller
                         }
                     }
                }
+        }
+       
+    }
+
+    public function notifyuser($appointment){
+
+        $message = null;
+
+        $user = User::find($appointment->user_id);
+        $mobile = '0'.$user->contact;
+        
+        $date = $appointment->date;
+        $carbon_date = Carbon::parse($date);
+        $formattedDate = $carbon_date->format('F jS Y, g:i:s A');
+
+        if($appointment->status == 3){
+            $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been approved! Please make sure to arrive a little earlier than the scheduled time.';
+        }else if($appointment->status == 2){
+            $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been cancelled!';
+        }else if($appointment->status == 4){
+            $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been reschedule! Please update your appointment at your most convenient available time';
+        }
+
+        if($mobile){
+            $ch = curl_init();
+            $parameters = array(
+                'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
+                'number' => $mobile,
+                'message' => $message,
+                'sendername' => 'SEMAPHORE'
+            );
+            curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
+            curl_setopt($ch, CURLOPT_POST, 1);
+    
+            //Send the parameters set above with the request
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    
+            // Receive response from server
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $output = curl_exec($ch);
+            curl_close($ch);
         }
        
     }

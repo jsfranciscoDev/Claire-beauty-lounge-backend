@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('service_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('status')->nullable();
+            $table->longText('remarks')->nullable();
             $table->dateTime('date')->nullable();
             $table->softDeletes();
             $table->timestamps();
