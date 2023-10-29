@@ -38,10 +38,17 @@ class StaffController extends Controller
             'staff_role' => $fields['staff_role'],
         ]);
 
-     
+        if ($imagePathConfig === 'LOCAL') {
+            $image_path = 'storage/user/';
+        } else {
+            // when hosted should add public/
+            $image_path = 'storage/app/public/user/';
+        }
+
         $user_profile = new UserProfile();
         $user_profile->user_id =  $user->id;
-        $user_profile->path = 'storage/user/profile.png'; 
+        $user_profile->path = $image_path.'profile.png';
+        // $user_profile->path = 'storage/user/profile.png'; 
         $user_profile->save();
 
         $response = [

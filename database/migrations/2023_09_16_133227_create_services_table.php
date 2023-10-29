@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('service_category')->nullable();
             $table->string('name');
             $table->string('details');
+            $table->string('estimated_hours');
             $table->unsignedBigInteger('price');
             $table->softDeletes();
             $table->timestamps();

@@ -18,6 +18,7 @@ class Services extends Model
         'service_category',
         'name',
         'price',
-        'details'
+        'details',
+        'estimated_hours'
     ];
 }

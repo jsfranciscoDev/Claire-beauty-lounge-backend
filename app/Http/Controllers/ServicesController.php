@@ -18,7 +18,8 @@ class ServicesController extends Controller
             $services = new Services();
             $services->name = $request->input('name');
             $services->service_category = $request->input('service_category'); // Assuming 'type' is a valid column in your table
-            $services->price = $request->input('price'); // Assuming 'price' is a valid column in your table
+            $services->price = $request->input('price');
+            $services->estimated_hours = $request->input('estimated_hours'); // Assuming 'price' is a valid column in your table
             $services->details = $request->input('details'); // Assuming 'details' is a valid column in your table
             $services->save();
 

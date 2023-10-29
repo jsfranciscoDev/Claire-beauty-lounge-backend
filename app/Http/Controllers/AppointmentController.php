@@ -57,6 +57,7 @@ class AppointmentController extends Controller
             'appointment.id as appointment_id',
             'appointment.status',
             'appointment.date',
+            'appointment.remarks',
             'appointment_status.detail',
             \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name') // Subquery to get user name 
         )
@@ -95,6 +96,7 @@ class AppointmentController extends Controller
         //         ->from('appointment')
         //         ->groupBy('user_id');
         // })
+        ->orderBy('appointment.created_at', 'desc')
         ->paginate(5);
     
 
@@ -131,6 +133,7 @@ class AppointmentController extends Controller
         //         ->from('appointment')
         //         ->groupBy('user_id');
         // })
+        ->orderBy('appointment.date', 'asc')
         ->paginate(5);
     
 
@@ -144,25 +147,31 @@ class AppointmentController extends Controller
 
 
     public function updateAppointment(Request $request){
-
+       
         DB::beginTransaction();
 
         try {
             $appointment = Appointment::find($request->input('id'));
-           
             $appointment->status = $request->input('status');
+            $appointment->remarks = null;
             $appointment->save();
             DB::commit();
 
+            $appointment = Appointment::find($request->input('id'));
 
-            $appointment_status = Appointment::find($request->input('id'));
-
-            if($appointment_status->status == 5){
-                $this->adjustProductQuantity( $appointment_status->id);
-            }else if($appointment_status->status == 2 || $appointment_status->status == 3 || $appointment_status->status == 4){
+            if($appointment->status == 5){
+                $this->adjustProductQuantity( $appointmen->id);
+            }else if($appointment->status == 2 || $appointment->status == 3){
+                $this->notifyuser($appointment);
+            }else if($appointment->status == 4){
+                $appointment->remarks = $request->input('remarks');
                 $this->notifyuser($appointment);
             }
             
+            $appointment->save();
+            DB::commit();
+            
+
             return response()->json(['message' => 'Appointment Updated Successfully!', 'status' => 'success']);
             
         } catch (\Exception $e) {
@@ -216,7 +225,7 @@ class AppointmentController extends Controller
         if($appointment->status == 3){
             $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been approved! Please make sure to arrive a little earlier than the scheduled time.';
         }else if($appointment->status == 2){
-            $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been cancelled!';
+            $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been cancelled! ' .$appointment->remarks;
         }else if($appointment->status == 4){
             $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been reschedule! Please update your appointment at your most convenient available time';
         }
@@ -242,4 +251,35 @@ class AppointmentController extends Controller
         }
        
     }
+
+    public function getScheduledAppointment(Request $request){
+        \Log::info($request->input('date'));
+        $date = Carbon::parse($request->input('date'));
+        // Format the date to display only year, month, and date
+        $formattedDate = $date->format('Y-m-d');
+
+        \Log::info($formattedDate);
+
+        $data = Appointment::getQuery()
+        ->join('users','users.id','appointment.staff_id')
+        ->join('services','services.id','appointment.service_id')
+        ->where('appointment.status', 3)
+        ->whereDate('date', $formattedDate)
+        ->orderBy('appointment.date', 'asc')
+        ->select(
+            'users.name',
+            'appointment.date',
+            'services.estimated_hours'
+        )
+        ->paginate(5);
+    
+        $response = [
+            'appointment' => $data,
+            'message' => 'success'
+        ];
+
+        return response($response, 200);
+        
+    }
+
 }

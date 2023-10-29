@@ -30,7 +30,13 @@ class AuthController extends Controller
 
         $user_profile = new UserProfile();
         $user_profile->user_id =  $user->id;
-        $user_profile->path = 'storage/user/profile.png'; 
+        if ($imagePathConfig === 'LOCAL') {
+            $image_path = 'storage/user/';
+        } else {
+            // when hosted should add public/
+            $image_path = 'storage/app/public/user/';
+        }
+        $user_profile->path = $image_path.'profile.png'; 
         $user_profile->save();
 
         // $token = $user->createToken('myapptoken')->plainTextToken;

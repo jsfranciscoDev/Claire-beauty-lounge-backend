@@ -109,3 +109,5 @@ Route::post('/submit-recovery-email', [AuthController::class, 'recoverAccount'])
 Route::post('/get-recovery-otp', [SmsController::class, 'getRecoveryOTP']);
 
 Route::post('/recovery-change-password', [AuthController::class, 'recoveryChangePassword']);
+
+Route::post('/get-schedule-appointment', [AppointmentController::class, 'getScheduledAppointment']);
