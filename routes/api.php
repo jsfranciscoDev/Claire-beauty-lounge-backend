@@ -11,7 +11,7 @@ use \App\Http\Controllers\ServicesController;
 use \App\Http\Controllers\AppointmentController;
 use \App\Http\Controllers\SmsController;
 use \App\Http\Controllers\NotificationsController;
-
+use \App\Http\Controllers\ReviewsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -92,6 +92,8 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::post('/assign-staff-services', [StaffController::class, 'AssignStaffServices']);
     Route::delete('/remove-staff-services/{id}', [StaffController::class, 'removeStaffServices']);
+
+    Route::post('/send-feedback', [ReviewsController::class, 'storeUserFeedback']);
 });
 
 
@@ -111,3 +113,5 @@ Route::post('/get-recovery-otp', [SmsController::class, 'getRecoveryOTP']);
 Route::post('/recovery-change-password', [AuthController::class, 'recoveryChangePassword']);
 
 Route::post('/get-schedule-appointment', [AppointmentController::class, 'getScheduledAppointment']);
+
+Route::post('/get-all-reviews', [ReviewsController::class, 'getallReviews']);
