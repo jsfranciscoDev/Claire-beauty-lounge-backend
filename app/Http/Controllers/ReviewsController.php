@@ -61,7 +61,7 @@ class ReviewsController extends Controller
     public function getallReviews(Request $request){
         $data = Reviews::getQuery()
         ->join('users','users.id','reviews.user_id')
-        ->join('user_profile', 'user_profile.user_id','users.id')
+        ->leftjoin('user_profile', 'user_profile.user_id','users.id')
         ->select(
             'users.name as name',
             'user_profile.path as profile',
