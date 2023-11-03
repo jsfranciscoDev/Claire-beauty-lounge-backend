@@ -2,16 +2,17 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use \App\Http\Controllers\ProductController;
+use \App\Http\Controllers\SmsController;
 use \App\Http\Controllers\AuthController;
-use \App\Http\Controllers\StaffController;
-use \App\Http\Controllers\FilesController;
 use \App\Http\Controllers\UserController;
+use \App\Http\Controllers\FilesController;
+use \App\Http\Controllers\StaffController;
+use App\Http\Controllers\SupportController;
+use \App\Http\Controllers\ProductController;
+use \App\Http\Controllers\ReviewsController;
 use \App\Http\Controllers\ServicesController;
 use \App\Http\Controllers\AppointmentController;
-use \App\Http\Controllers\SmsController;
 use \App\Http\Controllers\NotificationsController;
-use \App\Http\Controllers\ReviewsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -94,6 +95,11 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::delete('/remove-staff-services/{id}', [StaffController::class, 'removeStaffServices']);
 
     Route::post('/send-feedback', [ReviewsController::class, 'storeUserFeedback']);
+
+    //SUPPORT
+    Route::post('/send-support', [SupportController::class, 'SendSupport']);
+    Route::post('/get-all-support', [SupportController::class, 'fetchAllSupport']);
+   
 });
 
 
