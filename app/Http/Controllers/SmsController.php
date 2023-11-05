@@ -157,10 +157,11 @@ class SmsController extends Controller
         }
        
         
+        //OTP time
         $otpData = new Otp();
         $otpData->otp = $otp; 
         $otpData->type = $type;
-        $otpData->expiration = Carbon::now()->addMinutes(3); 
+        $otpData->expiration = Carbon::now()->addMinutes(10); 
         $otpData->save();
 
         return response()->json([
