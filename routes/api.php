@@ -12,6 +12,7 @@ use \App\Http\Controllers\AppointmentController;
 use \App\Http\Controllers\SmsController;
 use \App\Http\Controllers\NotificationsController;
 use \App\Http\Controllers\ReviewsController;
+use \App\Http\Controllers\MailController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -115,3 +116,5 @@ Route::post('/recovery-change-password', [AuthController::class, 'recoveryChange
 Route::post('/get-schedule-appointment', [AppointmentController::class, 'getScheduledAppointment']);
 
 Route::post('/get-all-reviews', [ReviewsController::class, 'getallReviews']);
+
+Route::get('send-mail', [MailController::class, 'index']);
