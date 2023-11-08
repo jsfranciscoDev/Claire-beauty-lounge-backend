@@ -17,7 +17,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
-            'contact' => 'required|numeric|digits:11',
+            'contact' => 'required|numeric|digits:11|unique:users,contact',
         ]);
 
         $user = User::create([
@@ -185,4 +185,22 @@ class AuthController extends Controller
           
         }
     }
+    public function validateAccount(Request $request){
+        \Log::info($request->get('phone'));
+        $validate = User::where('contact', $request->get('phone'))->first();
+
+        if(!is_null($validate)){
+            \Log::info('exist!');
+            return response()->json([
+                'message' => 'Account Already Exist!',
+                'status' => 'failed'
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'No account yet!',
+                'status' => 'success'
+            ]);
+        }
+    }
+    
 }

@@ -124,3 +124,6 @@ Route::post('/get-schedule-appointment', [AppointmentController::class, 'getSche
 Route::post('/get-all-reviews', [ReviewsController::class, 'getallReviews']);
 
 Route::get('send-mail', [MailController::class, 'index']);
+
+
+Route::post('/validate-account', [AuthController::class, 'validateAccount']);
