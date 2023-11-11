@@ -154,11 +154,12 @@ class ServicesController extends Controller
        
     }
 
-    public function removeSeviceItems($id){
-        $servicesProducts = ServiceProducts::where('services_id', $id)->get();
-        \Log::info(json_encode($servicesProducts));
+    public function removeSeviceItems(Request $request){
+
+        $servicesProducts = ServiceProducts::where('services_id', $request->id)->get();
+       
         if($servicesProducts->isNotEmpty()){ // Check if the collection is not empty
-            ServiceProducts::where('services_id', $id)->delete(); // Delete all matching records
+            ServiceProducts::where('services_id', $request->id)->delete(); // Delete all matching records
             $response = [
                 'message' => 'success'
             ];
