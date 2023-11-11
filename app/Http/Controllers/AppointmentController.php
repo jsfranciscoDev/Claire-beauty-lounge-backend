@@ -160,7 +160,7 @@ class AppointmentController extends Controller
             $appointment = Appointment::find($request->input('id'));
 
             if($appointment->status == 5){
-                $this->adjustProductQuantity( $appointmen->id);
+                $this->adjustProductQuantity( $appointment->id);
             }else if($appointment->status == 2 || $appointment->status == 3){
                 $this->notifyuser($appointment);
             }else if($appointment->status == 4){

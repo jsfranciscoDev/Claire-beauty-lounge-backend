@@ -38,6 +38,8 @@ class StaffController extends Controller
             'staff_role' => $fields['staff_role'],
         ]);
 
+        $imagePathConfig = config('imagepath.image_path');
+
         if ($imagePathConfig === 'LOCAL') {
             $image_path = 'storage/user/';
         } else {

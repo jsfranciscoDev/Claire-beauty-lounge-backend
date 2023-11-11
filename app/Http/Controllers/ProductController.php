@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class ProductController extends Controller
 {
    public function createProduct(Request $request){
-
+        $user = auth()->user();
         DB::beginTransaction();
 
         try {
@@ -21,6 +21,7 @@ class ProductController extends Controller
             $product->supplier_information = $request->input('supplier_information'); 
             $product->expiration_date = $request->input('expiration_date'); 
             $product->purchase_dates = $request->input('purchase_dates'); 
+            $product->user_id = $user->id;
             $product->save();
             DB::commit();
 
@@ -33,7 +34,16 @@ class ProductController extends Controller
 
    public function getProducts(){
 
-        $products = product::getQuery()->whereNull('deleted_at')->paginate(10);
+        $products = product::getQuery() 
+        ->join('users','users.id','products.user_id')
+        ->leftJoin('user_roles','user_roles.id','users.role_id')
+        ->whereNull('products.deleted_at')
+        ->select(
+            'users.name as username',
+            'user_roles.role as role',
+            'products.*'
+        )
+        ->paginate(10);
         
         $response = [
             'products' => $products,
@@ -61,6 +71,8 @@ class ProductController extends Controller
     }
 
     public function updateProduct(Request $request){
+            $user = auth()->user();
+
         DB::beginTransaction();
 
         try {
@@ -72,6 +84,7 @@ class ProductController extends Controller
             $product->price = $request->input('price'); 
             $product->quantity = $request->input('quantity'); 
             $product->supplier_information = $request->input('supplier_information'); 
+            $product->user_id = $user->id;
             $product->save();
 
             DB::commit();

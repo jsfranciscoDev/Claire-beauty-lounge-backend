@@ -18,11 +18,12 @@ class product extends Model
     
     protected $fillable = [
         'name', 
+        'user_id', 
         'batch_numbers',
         'purchase_dates',
         'expiration_dates',
         'supplier_inforation',
         'quantity',
-        'price'
+        'price',
     ];
 }
