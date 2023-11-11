@@ -39,7 +39,7 @@ class SmsController extends Controller
                 'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
                 'number' => $mobile,
                 'message' => 'Your OTP for verification is: '.  $otp . '. Please use this code to complete the verification process. Note: This OTP is valid for 3 minutes.',
-                'sendername' => 'SEMAPHORE'
+                'sendername' => 'CLAIRE'
             );
             curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -142,7 +142,7 @@ class SmsController extends Controller
                 'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
                 'number' => $mobile,
                 'message' => ''.  $otp . ' is your Claire Beauty Lounge reset code. Please use this code to complete the verification process. Note: This OTP is valid for 3 minutes.',
-                'sendername' => 'SEMAPHORE'
+                'sendername' => 'CLAIRE'
             );
             curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
             curl_setopt($ch, CURLOPT_POST, 1);

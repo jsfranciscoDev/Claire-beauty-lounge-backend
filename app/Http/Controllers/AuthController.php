@@ -124,56 +124,67 @@ class AuthController extends Controller
 
     public function recoverAccount(Request $request){
  
-
-        $data = User::where('email', $request->get('user_email'))->first();
+        if($request->method === 'username'){
+            $data = User::where('email', $request->get('user_email'))->first();
+        }else{
+            $data = User::where('contact', $request->get('phone'))->first();
+            
+        }
 
         if(!is_null($data)){
-
             $contact = $data->contact;
-
             if(!$contact){
                 return response()->json([
                     'message' => 'Account lacks a recovery contact Number. Please contact the administrator.',
                     'status' => 'failed',
                 ]);
             }
-         
-            $contactNumber = '0' . $contact;
 
+            $contactNumber = '0' . $contact;
             // Get the length of the string
             $length = strlen($contactNumber);
-
             // Calculate the number of middle digits to replace with asterisks
             $numAsterisks = $length - 8;
-
             // Create a string of asterisks
             $asterisks = str_repeat('*', $numAsterisks);
-
             // Replace the middle digits with asterisks
             $contactNumber = substr_replace($contactNumber, $asterisks, 4, -3);
-         
             return response()->json([
                 'message' => 'Verify your account!',
                 'status' => 'success',
                 'contact' =>  $contactNumber,
                 'user_id' => $data->id,
             ]);
-
         }else{
-            return response()->json([
-                'message' => 'Email does not Exist!',
-                'status' => 'failed'
-            ]);
+
+            if($request->method === 'username'){
+                return response()->json([
+                    'message' => 'Email does not Exist!',
+                    'status' => 'failed'
+                ]);
+            }else{
+                return response()->json([
+                    'message' => 'Phone Number does not Exist!',
+                    'status' => 'failed'
+                ]);
+            }
         }
        
     }
 
     public function recoveryChangePassword(Request $request){
+        \Log::info($request->all());
 
         $user =  User::find($request->payload['user_id']);
         if($request->payload['password'] === $request->payload['confirm_password']){
+            
+            if(is_null( $request->payload['username'])){
+                $user->password = bcrypt($request->payload['password']);
+            }else{
+                $user->password = bcrypt($request->payload['password']);
+                $user->email = $request->payload['username'];
+            }
            
-            $user->password = bcrypt($request->payload['password']);
             $user->save();
 
             return response(['message' => 'Password changed successfully', 'status' => 'success'], 200);
