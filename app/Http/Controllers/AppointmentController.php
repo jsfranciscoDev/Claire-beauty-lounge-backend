@@ -79,6 +79,7 @@ class AppointmentController extends Controller
         ->join('users','users.id','appointment.user_id')
         ->join('services','services.id','appointment.service_id')
         ->join('appointment_status','appointment_status.id','appointment.status')
+        ->leftJoin('user_roles as process_by_role', 'process_by_role.id', 'appointment.process_by')
         ->select(
             'users.id',
             'users.name as name',
@@ -89,7 +90,9 @@ class AppointmentController extends Controller
             'appointment.status',
             'appointment.date',
             'appointment_status.detail',
-            \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name')
+            \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name'),
+            \DB::raw('(SELECT name FROM users WHERE id = appointment.process_by) as process_by'),
+            'process_by_role.role as process_by_role'
         )
         // ->whereIn('appointment.id', function($query) {
         //     $query->select(DB::raw('MAX(id)'))
@@ -115,6 +118,7 @@ class AppointmentController extends Controller
         ->join('users','users.id','appointment.user_id')
         ->join('services','services.id','appointment.service_id')
         ->join('appointment_status','appointment_status.id','appointment.status')
+        ->leftJoin('user_roles as process_by_role', 'process_by_role.id', 'appointment.process_by')
         ->select(
             'users.id',
             'users.name as name',
@@ -125,7 +129,9 @@ class AppointmentController extends Controller
             'appointment.status',
             'appointment.date',
             'appointment_status.detail',
-            \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name')
+            \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name'),
+            \DB::raw('(SELECT name FROM users WHERE id = appointment.process_by) as process_by'),
+            'process_by_role.role as process_by_role'
         )
         ->where('appointment.status', $request->get('status'))
         // ->whereIn('appointment.id', function($query) {
@@ -149,11 +155,12 @@ class AppointmentController extends Controller
     public function updateAppointment(Request $request){
        
         DB::beginTransaction();
-
+        $user = auth()->user();
         try {
             $appointment = Appointment::find($request->input('id'));
             $appointment->status = $request->input('status');
             $appointment->remarks = null;
+            $appointment->process_by = $user->id;
             $appointment->save();
             DB::commit();
 

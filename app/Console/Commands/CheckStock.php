@@ -54,7 +54,7 @@ class CheckStock extends Command
                 'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
                 'number' => $mobile_number,
                 'message' => 'The following products are currently is in low stock: '. $details_string,
-                'sendername' => 'SEMAPHORE'
+                'sendername' => 'CLAIRE'
             );
             curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -67,7 +67,6 @@ class CheckStock extends Command
             $output = curl_exec($ch);
             curl_close($ch);
 
-            \Log::info('send low stocks');
         }
 
 
@@ -89,13 +88,13 @@ class CheckStock extends Command
 
         
         if($expireProducts->isNotEmpty()){
-            \Log::info('send expire');
+           
             $ch = curl_init();
             $parameters = array(
                 'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
                 'number' => $mobile_number,
                 'message' => 'The following products will expire soon : '. $details_string,
-                'sendername' => 'SEMAPHORE'
+                'sendername' => 'CLAIRE'
             );
             curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
             curl_setopt($ch, CURLOPT_POST, 1);

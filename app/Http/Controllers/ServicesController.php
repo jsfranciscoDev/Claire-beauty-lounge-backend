@@ -8,12 +8,13 @@ use App\Models\ServiceCategory;
 use Illuminate\Support\Facades\DB;
 use App\Models\product;
 use App\Models\ServiceProducts;
+use Illuminate\Support\Facades\Auth;
 
 class ServicesController extends Controller
 {
     public function createServices(Request $request) {
         DB::beginTransaction();
-        // test git
+        $user = auth()->user();
         try {
             $services = new Services();
             $services->name = $request->input('name');
@@ -21,6 +22,7 @@ class ServicesController extends Controller
             $services->price = $request->input('price');
             $services->estimated_hours = $request->input('estimated_hours'); // Assuming 'price' is a valid column in your table
             $services->details = $request->input('details'); // Assuming 'details' is a valid column in your table
+            $services->user_id = $user->id;
             $services->save();
 
             DB::commit();
@@ -32,15 +34,24 @@ class ServicesController extends Controller
         }
     }
 
-    public function getServices(){
-
+    public function getServices(Request $request){
+        \Log::info($request->all());
         $services = Services::getQuery()
         ->join('service_category', 'service_category.id', 'services.service_category')
+        ->join('users','users.id','services.user_id')
+        ->leftJoin('user_roles','user_roles.id','users.role_id')
         ->whereNull('services.deleted_at')
         ->select(
             'services.*',
             'service_category.name as category',
+            'users.name as username',
+            'user_roles.role as role',
         )
+        ->when($request->has('search'), function ($query) use ($request) {
+            $searchTerm = $request->input('search');
+            // Add a search filter based on the service name
+            $query->where('services.name', 'like', '%' . $searchTerm . '%');
+        })
         ->paginate(3);
 
         $services->each(function($service) {
@@ -100,7 +111,7 @@ class ServicesController extends Controller
 
     public function updateServices(Request $request){
         DB::beginTransaction();
-
+        $user = auth()->user();
         try {
             $services = Services::find( $request->input('id'));
             $services->name = $request->input('name');
@@ -108,6 +119,7 @@ class ServicesController extends Controller
             $services->price = $request->input('price');
             $services->estimated_hours = $request->input('estimated_hours'); // Assuming 'price' is a valid column in your table
             $services->details = $request->input('details');// Assuming 'details' is a valid column in your table
+            $services->user_id =  $user->id;
             $services->save();
 
             DB::commit();
@@ -130,15 +142,13 @@ class ServicesController extends Controller
     }
 
     public function createServiceItems(Request $request){
-        \Log::info($request->all());
-
+    
         $items = $request->get('service_items');
 
         foreach($items as $item){
-            \Log::info($item);
+           
             $exist = ServiceProducts::where('product_id', $item['product_id'])->where('services_id', $request->input('service_id'))->get();
-            \Log::info($exist);
-
+        
             if(!$exist->isEmpty()){
                 return response()->json(['message' => 'Some Products already added to this services! You must update the Quantity.', 'status' => 'failed']);
             }
@@ -174,10 +184,12 @@ class ServicesController extends Controller
 
     public function createServiceCategory(Request $request) {
         DB::beginTransaction();
-        // test git
+        $user = auth()->user();
+        \Log::info($user->id);
         try {
             $services = new ServiceCategory();
             $services->name = $request->input('name');
+            $services->user_id = $user->id;
             $services->save();
 
             DB::commit();
@@ -189,9 +201,21 @@ class ServicesController extends Controller
         }
     }
 
-    public function getServiceCategory(){
+    public function getServiceCategory(Request $request){
 
         $services = ServiceCategory::getQuery()
+        ->join('users','users.id','service_category.user_id')
+        ->leftJoin('user_roles','user_roles.id','users.role_id')
+        ->select(
+            'service_category.name as name',
+            'users.name as username',
+            'user_roles.role as role',
+        )
+        ->when($request->has('search'), function ($query) use ($request) {
+            $searchTerm = $request->input('search');
+            // Add a search filter based on the service name
+            $query->where('service_category.name', 'like', '%' . $searchTerm . '%');
+        })
         ->paginate(5);
 
         $response = [
@@ -221,10 +245,11 @@ class ServicesController extends Controller
 
     public function updateServicesCategory(Request $request){
         DB::beginTransaction();
-
+        $user = auth()->user();
         try {
             $services = ServiceCategory::find( $request->input('id'));
             $services->name = $request->input('name');
+            $services->user_id =  $user->id;
             $services->save();
 
             DB::commit();

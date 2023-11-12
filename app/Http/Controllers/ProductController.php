@@ -32,7 +32,7 @@ class ProductController extends Controller
         }
    }    
 
-   public function getProducts(){
+   public function getProducts(Request $request){
 
         $products = product::getQuery() 
         ->join('users','users.id','products.user_id')
@@ -43,6 +43,11 @@ class ProductController extends Controller
             'user_roles.role as role',
             'products.*'
         )
+        ->when($request->has('search'), function ($query) use ($request) {
+            $searchTerm = $request->input('search');
+            // Add a search filter based on the service name
+            $query->where('products.name', 'like', '%' . $searchTerm . '%');
+        })
         ->paginate(10);
         
         $response = [

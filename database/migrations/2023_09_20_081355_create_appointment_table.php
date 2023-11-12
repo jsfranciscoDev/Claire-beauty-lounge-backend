@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('staff_id')->nullable();
             $table->unsignedBigInteger('service_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('process_by')->nullable();
             $table->unsignedBigInteger('status')->nullable();
             $table->longText('remarks')->nullable();
             $table->dateTime('date')->nullable();

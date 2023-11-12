@@ -12,7 +12,8 @@ class ServiceCategory extends Model
     protected $table = 'service_category';
     
     protected $fillable = [
-        'name'
+        'name',
+        'user_id'
     ];
 
 }

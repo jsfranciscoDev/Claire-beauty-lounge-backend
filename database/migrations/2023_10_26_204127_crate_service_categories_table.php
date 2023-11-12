@@ -16,6 +16,7 @@ return new class extends Migration
         //
         Schema::create('service_category', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name');
             $table->timestamps();
         });
