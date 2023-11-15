@@ -16,34 +16,65 @@ use Carbon\Carbon;
 class AppointmentController extends Controller
 {
     //
-    public function createAppointment(Request $request){
-        \Log::info($request->all());
-        DB::beginTransaction();
+    public function createAppointment(Request $request)
+    {
+        
         $user = Auth::user();
         $date = $request->input('date');
         $time = $request->input('time');
-
-        $date_time =  $date.' '.$time;
-      
-
+        $date_time = $date . ' ' . $time;
+    
+        $validateIfReschedule = Appointment::where('user_id', $user->id)->first();
+    
+        if ($validateIfReschedule && $validateIfReschedule->status == 4) {
+            $this->updateResched($request, $validateIfReschedule->id);
+            return response()->json(['message' => 'Appointment Updated Successfully!', 'status' => 'success']);
+        }
+        else{
+            DB::beginTransaction();
+            try {
+                $appointment = new Appointment();
+                $appointment->service_id = $request->input('service_id');
+                $appointment->user_id = $user->id;
+                $appointment->date = $date_time;
+                $appointment->status = 1;
+                $appointment->staff_id = $request->input('user_staff');
+                $appointment->save();
+                DB::commit();
+                return response()->json(['message' => 'Appointment Booked Successfully!', 'status' => 'success']);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json(['message' => 'Error Creating Appointment', 'status' => 'failed', 'error' => $e->getMessage()]);
+            }
+        }
+        
+    }
+    
+    public function updateResched($request, $appointmentId)
+    {
+        
+        $user = auth()->user();
+        $date = $request->input('date');
+        $time = $request->input('time');
+        $date_time = $date . ' ' . $time;
+    
+        DB::beginTransaction();
         try {
-            $appointment = new Appointment();
-            $appointment->service_id = $request->input('service_id'); 
+            $appointment = Appointment::find($appointmentId);
+            $appointment->remarks = null;
+            $appointment->process_by = null;
             $appointment->user_id = $user->id;
-            $appointment->date = $date_time; 
-            $appointment->status = 1; 
+            $appointment->date = $date_time;
             $appointment->staff_id = $request->input('user_staff');
+            $appointment->status = 1;
             $appointment->save();
-
             DB::commit();
-
-            return response()->json(['message' => 'Appointment Book Successfully!', 'status' => 'success']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Error Creating Appointment', 'status' => 'failed', 'error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error Updating Appointment', 'status' => 'failed', 'error' => $e->getMessage()]);
         }
-
     }
+    
 
     public function getUserAppointment(){
         $user = Auth::user();

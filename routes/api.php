@@ -98,7 +98,7 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::post('/send-feedback', [ReviewsController::class, 'storeUserFeedback']);
 
     //SUPPORT
-    Route::post('/send-support', [SupportController::class, 'SendSupport']);
+   
     Route::post('/get-all-support', [SupportController::class, 'fetchAllSupport']);
    
 });
@@ -127,3 +127,4 @@ Route::get('send-mail', [MailController::class, 'index']);
 
 
 Route::post('/validate-account', [AuthController::class, 'validateAccount']);
+Route::post('/send-support', [SupportController::class, 'SendSupport']);
