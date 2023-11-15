@@ -104,8 +104,30 @@ class AppointmentController extends Controller
         return response($response, 200);
     }
 
-    public function getAllAppointments(){
-       
+    public function getAllAppointments(Request $request){
+        \Log::info($request->all());
+     
+        $dateFilter = $request->input('datefilter');
+
+        $formattedDateArray = [];
+
+
+        // Check if 'datefilter' is set and is an array
+        if (is_array($dateFilter)) {
+            // Iterate through each date in the date range
+            foreach ($dateFilter as $date) {
+                // Parse the input date using Carbon
+                $carbonDate = \Carbon\Carbon::parse($date);
+        
+                // Format the date in the desired format
+                $formattedDate = $carbonDate->format('Y-m-d');
+        
+                // Store the formatted date in a new array
+                $formattedDateArray[] = $formattedDate;
+            }
+        }
+        \Log::info($formattedDateArray);
+
         $data = Appointment::getQuery()
         ->join('users','users.id','appointment.user_id')
         ->join('services','services.id','appointment.service_id')
@@ -125,6 +147,15 @@ class AppointmentController extends Controller
             \DB::raw('(SELECT name FROM users WHERE id = appointment.process_by) as process_by'),
             'process_by_role.role as process_by_role'
         )
+        ->when($formattedDateArray, function ($query) use ($formattedDateArray) {
+            // Add a search filter based on the service name
+            $query->whereBetween('appointment.date',  $formattedDateArray);
+        })
+        ->when($request->has('search'), function ($query) use ($request) {
+            $searchTerm = $request->input('search');
+            // Add a search filter based on the service name
+            $query->where('users.name', 'like', '%' . $searchTerm . '%');
+        })
         // ->whereIn('appointment.id', function($query) {
         //     $query->select(DB::raw('MAX(id)'))
         //         ->from('appointment')
@@ -265,7 +296,7 @@ class AppointmentController extends Controller
         }else if($appointment->status == 2){
             $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been cancelled! ' .$appointment->remarks;
         }else if($appointment->status == 4){
-            $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been reschedule! Please update your appointment at your most convenient available time';
+            $message = 'Your Appointment at Claire Beauty Lounge on '.  $formattedDate .' has been reschedule! Please update your appointment at your most convenient available time' .$appointment->remarks;
         }
 
         if($mobile){
@@ -274,7 +305,7 @@ class AppointmentController extends Controller
                 'apikey' => '01f7093eedd3bc546f9b256c301b01cf', 
                 'number' => $mobile,
                 'message' => $message,
-                'sendername' => 'SEMAPHORE'
+                'sendername' => 'CLAIRE'
             );
             curl_setopt($ch, CURLOPT_URL, 'https://semaphore.co/api/v4/messages');
             curl_setopt($ch, CURLOPT_POST, 1);

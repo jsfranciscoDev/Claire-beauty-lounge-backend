@@ -177,7 +177,7 @@ class StaffController extends Controller
     public function timeIn(Request $request){
  
         $currentDate = \Carbon\Carbon::now();
-    
+        
         try {
             DB::beginTransaction();
             
@@ -191,6 +191,17 @@ class StaffController extends Controller
                     DB::commit();
                     return response()->json(['message' => 'Time in Successfully!', 'status' => 'success','action' => 'time_in']);
                 } else if ($request->input('action') == 'time_out') {
+
+                    $timeExist = DailyTimeinRecord::where('user_id', $request->input('user_id'))
+                    ->where('date', $currentDate->format('Y-m-d'))
+                    ->first();
+
+                    if($timeExist->time_out){
+                        return response()->json(['message' => 'Unable to time Again!', 'status' => 'failed', 'action' => 'time_out']);
+                    }
+
+                    \Log::info(json_encode($timeExist->time_out));
+
                     $user_record = DailyTimeinRecord::where('user_id', $request->input('user_id'))
                         ->where('date', $currentDate->format('Y-m-d'))
                         ->first();

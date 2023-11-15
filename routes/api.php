@@ -81,7 +81,7 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::post('/attach-service-items', [ServicesController::class, 'createServiceItems']);
     Route::post('/remove-service-items', [ServicesController::class, 'removeSeviceItems']);
 
-    Route::get('/get-all-appointments', [AppointmentController::class, 'getAllAppointments']);
+    Route::post('/get-all-appointments', [AppointmentController::class, 'getAllAppointments']);
     Route::post('/get-status-appointments', [AppointmentController::class, 'getStatusAppointments']);
     Route::post('/update-status-appointment', [AppointmentController::class, 'updateAppointment']);
     
