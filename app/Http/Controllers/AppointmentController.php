@@ -12,6 +12,8 @@ use App\Models\product;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Carbon\Carbon;
+use Mail;
+use App\Mail\replyEmail;
 
 class AppointmentController extends Controller
 {
@@ -360,6 +362,13 @@ class AppointmentController extends Controller
             $output = curl_exec($ch);
             curl_close($ch);
         }
+
+        $mailData = [
+            'title' => 'Claire Beauty Lounge',
+            'body' => $message,
+        ];
+        
+        Mail::to($email)->send(new ReplyEmail($mailData));
        
     }
 
