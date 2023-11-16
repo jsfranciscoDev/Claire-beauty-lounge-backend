@@ -9,15 +9,16 @@ use App\Mail\replyEmail;
 class MailController extends Controller
 {
     //
-    public function index()
-    {
+    public function index(Request $request)
+    {   
+      
         $mailData = [
-            'title' => 'Mail from test.com',
-            'body' => 'This is for testing email using smtp.'
+            'title' => 'Claire Beauty Lounge',
+            'body' => $request->input('reply_msg'),
         ];
          
-        Mail::to('steven123francisco@gmail.com')->send(new replyEmail($mailData));
-           
-        dd("Email is sent successfully.");
+        Mail::to($request->input('recipeintemail'))->send(new replyEmail($mailData));
+
+        return response()->json(['message' => 'Email Sent', 'status' => 'Success']);
     }
 }

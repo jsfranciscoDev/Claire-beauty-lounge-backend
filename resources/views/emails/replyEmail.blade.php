@@ -1,19 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ItsolutionStuff.com</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $mailData['title'] }}</title>
+    <!-- Add any additional head elements or styles here -->
 </head>
-<body>
-    <h1>{{ $mailData['title'] }}</h1>
-    <p>{{ $mailData['body'] }}</p>
-  
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-     
-    <p>Thank you</p>
+<body style="font-family: 'Arial', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+
+    <table role="presentation" cellspacing="0" cellpadding="0" width="100%" style="margin: 0; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" cellspacing="0" cellpadding="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h2 style="color: #bd8c8c;">{{ $mailData['title'] }}</h2>
+                            <p style="color: #666666;">{{ $mailData['body'] }}</p>
+
+                            <!-- Additional content or customization can be added here -->
+
+                            <p style="color: #888888; margin-top: 20px;">Thank you,</p>
+                            <p style="color: #888888;">Claire Admin</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

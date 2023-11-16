@@ -9,10 +9,12 @@ class NotificationsController extends Controller
     //
 
     public function UpdateNotification(Request $request){
-       
+        \Log::info($request->all());
+
         $Notifications = new Notifications();
         $Notifications->quantity =  $request->get('quantity');
         $Notifications->phone_number = $request->get('phone_number'); 
+        $Notifications->email = $request->get('email'); 
         $Notifications->save();
 
         return response()->json([
@@ -23,9 +25,9 @@ class NotificationsController extends Controller
     }
 
     public function NotificationData(Request $request){
-        
         $Notifications = Notifications::latest('created_at')->first();
         $Notifications->phone_number =  '0'.$Notifications->phone_number;
+        $Notifications->email = $Notifications->email;
 
         return response()->json([
             'notification' => $Notifications,

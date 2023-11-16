@@ -13,6 +13,7 @@ class Notifications extends Model
 
     protected $fillable = [
         'quantity',
-        'phone_number'
+        'phone_number',
+        'email'
     ];
 }

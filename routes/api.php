@@ -100,7 +100,11 @@ Route::middleware('auth:sanctum')->group( function () {
     //SUPPORT
    
     Route::post('/get-all-support', [SupportController::class, 'fetchAllSupport']);
-   
+
+    Route::post('send-mail', [MailController::class, 'index']);
+    
+    Route::get('/get-product-lowstocks', [ProductController::class, 'getLowStocks']);
+    Route::get('/get-product-expire', [ProductController::class, 'getEpxireStocks']);
 });
 
 
@@ -123,7 +127,7 @@ Route::post('/get-schedule-appointment', [AppointmentController::class, 'getSche
 
 Route::post('/get-all-reviews', [ReviewsController::class, 'getallReviews']);
 
-Route::get('send-mail', [MailController::class, 'index']);
+
 
 
 Route::post('/validate-account', [AuthController::class, 'validateAccount']);

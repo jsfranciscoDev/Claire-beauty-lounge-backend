@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('quantity')->nullable();
             $table->unsignedBigInteger('phone_number')->nullable();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

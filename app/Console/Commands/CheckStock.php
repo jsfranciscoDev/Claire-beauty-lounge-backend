@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use App\Models\product;
 use Carbon\Carbon;
 use App\Models\Notifications;
+use Mail;
+use App\Mail\replyEmail;
 
 class CheckStock extends Command
 {
@@ -35,6 +37,7 @@ class CheckStock extends Command
         $Notifications = Notifications::latest('created_at')->first();
 
         $mobile_number = '0'.$Notifications->phone_number;
+        $email = $Notifications->email;
         $product_details = [];
         $lowStockItems = product::where('quantity', '<', $Notifications->quantity)->whereNull('deleted_at')->get();
 
@@ -66,6 +69,14 @@ class CheckStock extends Command
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $output = curl_exec($ch);
             curl_close($ch);
+
+            $mailData = [
+                'title' => 'Claire Beauty Lounge Stock Update',
+                'body' => 'The following products are currently is in low stock: '. $details_string,
+            ];
+          
+            Mail::to($email)->send(new ReplyEmail($mailData));
+    
 
         }
 
@@ -106,6 +117,13 @@ class CheckStock extends Command
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $output = curl_exec($ch);
             curl_close($ch);
+
+            $mailData = [
+                'title' => 'Claire Beauty Lounge Stock Update',
+                'body' => 'The following products will expire soon : '. $details_string,
+            ];
+          
+            Mail::to($email)->send(new ReplyEmail($mailData));
         } 
         
     }

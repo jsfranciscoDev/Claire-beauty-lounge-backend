@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Notifications;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -100,4 +102,52 @@ class ProductController extends Controller
             return response()->json(['message' => 'Error Creating Services', 'status' => 'failed', 'error' => $e->getMessage()]);
         }
     }
+
+    public function getLowStocks(Request $request){
+        $product_details = [];
+
+        $Notifications = Notifications::latest('created_at')->first();
+
+        $lowStockItems = product::where('quantity', '<', $Notifications->quantity)->whereNull('deleted_at')->get();
+        if ($lowStockItems->isEmpty()) {
+            $response = [
+                'products' => $lowStockItems,
+                'message' => 'No low stocks'
+            ];
+        } else {
+            $response = [
+                'products' => $lowStockItems,
+                'message' => 'Low stocks'
+            ];
+        }
+       
+
+        return response($response, 201);
+    }
+
+    public function getEpxireStocks(Request $request){
+        $product_details = [];
+
+        $now = Carbon::now();
+        $expireProducts = Product::whereYear('expiration_date', $now->year)
+        ->whereMonth('expiration_date', $now->month)
+        ->whereNull('deleted_at')
+        ->get();
+
+        if ($expireProducts->isEmpty()) {
+            $response = [
+                'products' => $expireProducts,
+                'message' => 'No Products Will expire soon'
+            ];
+        } else {
+            $response = [
+                'products' => $expireProducts,
+                'message' => 'Products Will expire soon'
+            ];
+        }
+       
+        return response($response, 201);
+    }
+    
+    
 }

@@ -29,6 +29,6 @@ class replyEmail extends Mailable
 
     public function build()
     {
-        return $this->subject('test.com')->view('emails.replyEmail');
+        return $this->subject('clairebeautylounge@gmail.com')->view('emails.replyEmail');
     }
 }
