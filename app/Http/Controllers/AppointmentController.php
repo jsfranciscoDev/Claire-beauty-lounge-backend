@@ -329,6 +329,7 @@ class AppointmentController extends Controller
         $message = null;
 
         $user = User::find($appointment->user_id);
+        $email = $user->email;
         $mobile = '0'.$user->contact;
         
         $date = $appointment->date;
