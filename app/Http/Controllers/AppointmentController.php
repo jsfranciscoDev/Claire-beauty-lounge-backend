@@ -111,21 +111,27 @@ class AppointmentController extends Controller
 
         $formattedDateArray = [];
 
-
         // Check if 'datefilter' is set and is an array
         if (is_array($dateFilter)) {
             // Iterate through each date in the date range
             foreach ($dateFilter as $date) {
                 // Parse the input date using Carbon
                 $carbonDate = \Carbon\Carbon::parse($date);
-        
-                // Format the date in the desired format
-                $formattedDate = $carbonDate->format('Y-m-d');
-        
-                // Store the formatted date in a new array
-                $formattedDateArray[] = $formattedDate;
+                
+                // Format the start of the date in the desired format
+                $formattedStartDate = $carbonDate->format('Y-m-d 00:00:00');
+                
+                // Format the end of the date in the desired format (end of day)
+                $formattedEndDate = $carbonDate->endOfDay()->format('Y-m-d 23:59:59');
+                
+                // Store the formatted dates in a new array
+                $formattedDateArray[] = [
+                    'date_from' => $formattedStartDate,
+                    'date_to' => $formattedEndDate,
+                ];
             }
         }
+        
         \Log::info($formattedDateArray);
 
         $data = Appointment::getQuery()
@@ -149,7 +155,7 @@ class AppointmentController extends Controller
         )
         ->when($formattedDateArray, function ($query) use ($formattedDateArray) {
             // Add a search filter based on the service name
-            $query->whereBetween('appointment.date',  $formattedDateArray);
+            $query->whereBetween('appointment.date',  [$formattedDateArray['date_from'],$formattedDateArray['date_to']]);
         })
         ->when($request->has('search'), function ($query) use ($request) {
             $searchTerm = $request->input('search');
@@ -175,7 +181,34 @@ class AppointmentController extends Controller
 
 
     public function getStatusAppointments(Request $request){
-       
+        $dateFilter = $request->input('date');
+
+        $formattedDateArray = [];
+
+        // Check if 'datefilter' is set and is an array
+        if (is_array($dateFilter)) {
+            // Iterate through each date in the date range
+            foreach ($dateFilter as $date) {
+                // Parse the input date using Carbon
+                $carbonDate = \Carbon\Carbon::parse($date);
+                
+                // Format the start of the date in the desired format
+                $formattedStartDate = $carbonDate->format('Y-m-d 00:00:00');
+                
+                // Format the end of the date in the desired format (end of day)
+                $formattedEndDate = $carbonDate->endOfDay()->format('Y-m-d 23:59:59');
+                
+                // Store the formatted dates in a new array
+                $formattedDateArray[] = [
+                    'date_from' => $formattedStartDate,
+                    'date_to' => $formattedEndDate,
+                ];
+            }
+        }
+        
+        \Log::info($formattedDateArray);
+        
+
         $data = Appointment::getQuery()
         ->join('users','users.id','appointment.user_id')
         ->join('services','services.id','appointment.service_id')
@@ -195,6 +228,15 @@ class AppointmentController extends Controller
             \DB::raw('(SELECT name FROM users WHERE id = appointment.process_by) as process_by'),
             'process_by_role.role as process_by_role'
         )
+        ->when($formattedDateArray, function ($query) use ($formattedDateArray) {
+            // Add a search filter based on the service name
+            $query->whereBetween('appointment.date',  [$formattedDateArray['date_from'],$formattedDateArray['date_to']]);
+        })
+        ->when($request->has('search'), function ($query) use ($request) {
+            $searchTerm = $request->input('search');
+            // Add a search filter based on the service name
+            $query->where('users.name', 'like', '%' . $searchTerm . '%');
+        })
         ->where('appointment.status', $request->get('status'))
         // ->whereIn('appointment.id', function($query) {
         //     $query->select(DB::raw('MAX(id)'))
