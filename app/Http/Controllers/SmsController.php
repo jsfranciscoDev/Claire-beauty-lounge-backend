@@ -62,7 +62,7 @@ class SmsController extends Controller
         $otpData = new Otp();
         $otpData->otp = $otp; 
         $otpData->type = $type;
-        $otpData->expiration = Carbon::now()->addMinutes(10); 
+        $otpData->expiration = Carbon::now()->addMinutes(3); 
         $otpData->save();
 
        
@@ -129,12 +129,10 @@ class SmsController extends Controller
 
     public function getRecoveryOTP(Request $request){
       
-        \Log::info($request->all());
         $data = User::find($request->get('user_id'));
         $mobile = null;
         $type = null;
 
-        \Log::info(json_encode($data));
         
         if($data->contact){
             $mobile = '0'.$data->contact;

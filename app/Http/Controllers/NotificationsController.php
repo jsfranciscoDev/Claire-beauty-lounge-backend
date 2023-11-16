@@ -9,7 +9,6 @@ class NotificationsController extends Controller
     //
 
     public function UpdateNotification(Request $request){
-        \Log::info($request->all());
 
         $Notifications = new Notifications();
         $Notifications->quantity =  $request->get('quantity');

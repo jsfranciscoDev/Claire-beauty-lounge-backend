@@ -17,7 +17,6 @@ class ItemTypeController extends Controller
         }
         catch(\Exception $e){
             DB::rollback();
-            \Log::info($e);
             return response()->json([
                 'message' => 'error'
             ]);
@@ -40,7 +39,6 @@ class ItemTypeController extends Controller
         }
         catch(\Exception $e){
             DB::rollback();
-            \Log::info($e);
             return response()->json([
                 'message' => 'error'
             ]);

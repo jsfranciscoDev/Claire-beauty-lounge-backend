@@ -200,7 +200,6 @@ class StaffController extends Controller
                         return response()->json(['message' => 'Unable to time Again!', 'status' => 'failed', 'action' => 'time_out']);
                     }
 
-                    \Log::info(json_encode($timeExist->time_out));
 
                     $user_record = DailyTimeinRecord::where('user_id', $request->input('user_id'))
                         ->where('date', $currentDate->format('Y-m-d'))
@@ -318,7 +317,6 @@ class StaffController extends Controller
         try {
 
             foreach($request->input('services') as $service){
-                \Log::info($service);
                 $staffservices = new StaffServices();
                 $staffservices->user_id = $request->input('user_id');
                 $staffservices->service_category_id = $service;

@@ -35,7 +35,6 @@ class ServicesController extends Controller
     }
 
     public function getServices(Request $request){
-        \Log::info($request->all());
         $services = Services::getQuery()
         ->join('service_category', 'service_category.id', 'services.service_category')
         ->join('users','users.id','services.user_id')
@@ -185,7 +184,6 @@ class ServicesController extends Controller
     public function createServiceCategory(Request $request) {
         DB::beginTransaction();
         $user = auth()->user();
-        \Log::info($user->id);
         try {
             $services = new ServiceCategory();
             $services->name = $request->input('name');

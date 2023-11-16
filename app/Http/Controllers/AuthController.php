@@ -173,7 +173,6 @@ class AuthController extends Controller
     }
 
     public function recoveryChangePassword(Request $request){
-        \Log::info($request->all());
 
         $user =  User::find($request->payload['user_id']);
         if($request->payload['password'] === $request->payload['confirm_password']){
@@ -201,7 +200,6 @@ class AuthController extends Controller
         $validate = User::where('contact', $request->get('phone'))->first();
 
         if(!is_null($validate)){
-            \Log::info('exist!');
             return response()->json([
                 'message' => 'Account Already Exist!',
                 'status' => 'failed'

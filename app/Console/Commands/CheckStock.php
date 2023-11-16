@@ -82,7 +82,8 @@ class CheckStock extends Command
 
 
         $expireProducts = Product::whereYear('expiration_date', $now->year)
-        ->whereMonth('expiration_date', $now->month)
+        // ->whereMonth('expiration_date', $now->month)
+        ->whereDate('expiration_date', Carbon::now()->addDays(7)->toDateString())
         ->whereNull('deleted_at')
         ->get();
 
@@ -94,8 +95,6 @@ class CheckStock extends Command
         }
 
         $details_string = implode(", ", $product_details);
-
-        \Log::info(json_encode($expireProducts));
 
         
         if($expireProducts->isNotEmpty()){

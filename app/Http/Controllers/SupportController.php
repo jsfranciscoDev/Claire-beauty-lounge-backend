@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 class SupportController extends Controller
 {
     public function SendSupport(Request $request) {
-        \Log::info($request->all());
         $fields = $request->validate([
             'name' => 'required|string',
             'email' => 'required|string',
@@ -31,8 +30,6 @@ class SupportController extends Controller
     }
 
     public function fetchAllSupport(Request $request){
-        \Log::info($request->all());
-
         $support = Support::getQuery()->paginate(5);
         
         $response = [

@@ -13,7 +13,6 @@ class ReviewsController extends Controller
 {
     //
     public function storeUserFeedback(Request $request){
-        \Log::info($request->all());
 
         $user = auth()->user();
         // $timestamp = Carbon::now()->timestamp;
