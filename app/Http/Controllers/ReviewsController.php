@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -49,12 +50,18 @@ class ReviewsController extends Controller
         $reviews->feedback = $request->payload['comment'];
         // $reviews->image_path = $image_path;
         $reviews->save();
+
+        $appointment = Appointment::where('user_id',  $user->id)->where('review', 0)->first();
+        $appointment->review = 1;
+        $appointment->save();
+
+        
         return response()->json([
             'status' => 'success',
             'message' => 'Feedback Successfully sent!'
         ]);
         
-        return response($response, 200);
+        
     }   
 
     public function getallReviews(Request $request){

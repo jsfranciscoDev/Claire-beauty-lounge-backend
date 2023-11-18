@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('status')->nullable();
             $table->longText('remarks')->nullable();
             $table->dateTime('date')->nullable();
+            $table->boolean('review')->nullable()->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

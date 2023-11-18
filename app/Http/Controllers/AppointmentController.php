@@ -92,6 +92,7 @@ class AppointmentController extends Controller
             'appointment.date',
             'appointment.remarks',
             'appointment_status.detail',
+            'appointment.review',
             \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name') // Subquery to get user name 
         )
         ->latest('appointment.created_at')

@@ -205,6 +205,7 @@ class ServicesController extends Controller
         ->join('users','users.id','service_category.user_id')
         ->leftJoin('user_roles','user_roles.id','users.role_id')
         ->select(
+            'service_category.id',
             'service_category.name as name',
             'users.name as username',
             'user_roles.role as role',
