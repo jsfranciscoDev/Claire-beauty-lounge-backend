@@ -176,14 +176,7 @@ class AuthController extends Controller
 
         $user =  User::find($request->payload['user_id']);
         if($request->payload['password'] === $request->payload['confirm_password']){
-            
-            if(is_null( $request->payload['username'])){
-                $user->password = bcrypt($request->payload['password']);
-            }else{
-                $user->password = bcrypt($request->payload['password']);
-                $user->email = $request->payload['username'];
-            }
-           
+            $user->password = bcrypt($request->payload['password']);
             $user->save();
 
             return response(['message' => 'Password changed successfully', 'status' => 'success'], 200);
