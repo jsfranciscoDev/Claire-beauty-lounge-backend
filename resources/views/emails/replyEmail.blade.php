@@ -16,9 +16,18 @@
                         <td style="padding: 20px;">
                             <h2 style="color: #bd8c8c;">{{ $mailData['title'] }}</h2>
                             <p style="color: #666666;">{{ $mailData['body'] }}</p>
-
+                            <br>
                             <!-- Additional content or customization can be added here -->
+                            @isset($mailData['service_details'])
+                                @php
+                                    $serviceData = json_decode($mailData['service_details'], true);
+                                @endphp
+                                 <h2 style="color: #bd8c8c;">{{ $serviceData['name'] }}</h2>
+                                 <h1 style="color: #888888;">Price: ₱{{ $serviceData['price'] }}</h1>
 
+                            @endisset
+                            
+                            <br>
                             <p style="color: #888888; margin-top: 20px;">Thank you,</p>
                             <p style="color: #888888;">Claire Admin</p>
                         </td>

@@ -7,6 +7,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserProfile;
+use Mail;
+use App\Mail\replyEmail;
 
 class AuthController extends Controller
 {
@@ -28,6 +30,8 @@ class AuthController extends Controller
             'role_id' =>$request['role_id']
         ]);
 
+        $imagePathConfig = config('imagepath.image_path');
+
         $user_profile = new UserProfile();
         $user_profile->user_id =  $user->id;
         if ($imagePathConfig === 'LOCAL') {
@@ -41,9 +45,15 @@ class AuthController extends Controller
 
         // $token = $user->createToken('myapptoken')->plainTextToken;
 
+        $mailData = [
+            'title' => 'Claire Beauty Lounge',
+            'body' => 'Welcome to Claire Beauty Lounge! Thank you for registering.',
+        ];
+        
+        Mail::to($fields['email'])->send(new ReplyEmail($mailData));
+
         $response = [
             'user' => $user,
-            'token' => $token,
             'message' => 'success'
         ];
 

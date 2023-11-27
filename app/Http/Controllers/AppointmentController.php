@@ -93,6 +93,7 @@ class AppointmentController extends Controller
             'appointment.remarks',
             'appointment_status.detail',
             'appointment.review',
+            'appointment.created_at',
             \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name') // Subquery to get user name 
         )
         ->latest('appointment.created_at')
@@ -152,6 +153,7 @@ class AppointmentController extends Controller
             'appointment.status',
             'appointment.date',
             'appointment_status.detail',
+            'appointment.created_at',
             \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name'),
             \DB::raw('(SELECT name FROM users WHERE id = appointment.process_by) as process_by'),
             'process_by_role.role as process_by_role'
@@ -227,6 +229,7 @@ class AppointmentController extends Controller
             'appointment.status',
             'appointment.date',
             'appointment_status.detail',
+            'appointment.created_at',
             \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name'),
             \DB::raw('(SELECT name FROM users WHERE id = appointment.process_by) as process_by'),
             'process_by_role.role as process_by_role'
@@ -333,6 +336,10 @@ class AppointmentController extends Controller
         $email = $user->email;
         $mobile = '0'.$user->contact;
         
+        $service = Services::find($appointment->service_id);
+
+        \Log::info(json_encode($service));
+
         $date = $appointment->date;
         $carbon_date = Carbon::parse($date);
         $formattedDate = $carbon_date->format('F jS Y, g:i:s A');
@@ -368,6 +375,7 @@ class AppointmentController extends Controller
         $mailData = [
             'title' => 'Claire Beauty Lounge',
             'body' => $message,
+            'service_details' => $service
         ];
         
         Mail::to($email)->send(new ReplyEmail($mailData));
