@@ -14,6 +14,7 @@ use GuzzleHttp\RequestOptions;
 use Carbon\Carbon;
 use Mail;
 use App\Mail\replyEmail;
+use App\Models\Notifications;
 
 class AppointmentController extends Controller
 {
@@ -42,12 +43,28 @@ class AppointmentController extends Controller
                 $appointment->status = 1;
                 $appointment->staff_id = $request->input('user_staff');
                 $appointment->save();
+
+                $Notifications = Notifications::latest('created_at')->first();
+
+                $service = Services::find($appointment->service_id);
+                
+                \Log::info($Notifications->email);
+
+                $mailData = [
+                    'title' => 'Claire Beauty Lounge',
+                    'body' => 'Congratulations!! You New Appointments!',
+                    'service_details' => $service
+                ];
+                
+                Mail::to($Notifications->email)->send(new ReplyEmail($mailData));
+
                 DB::commit();
                 return response()->json(['message' => 'Appointment Booked Successfully!', 'status' => 'success']);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['message' => 'Error Creating Appointment', 'status' => 'failed', 'error' => $e->getMessage()]);
             }
+
         }
         
     }
@@ -412,4 +429,38 @@ class AppointmentController extends Controller
         
     }
 
+    public function getNewAppointment(){
+        $appointment_details = [];
+
+        $now = now();
+        $thirtyMinutesAgo = now()->subMinutes(30);
+    
+        $appointment_details = Appointment::where('appointment.created_at', '>=', $thirtyMinutesAgo)
+            ->leftJoin('users','users.id','appointment.user_id')
+            ->leftJoin('services','services.id','appointment.service_id')
+            ->where('appointment.created_at', '<=', $now)
+            ->whereNull('appointment.deleted_at')
+            ->where('appointment.status', 1)
+            ->select(
+                'users.name',
+                'appointment.date',
+                'services.name as services_name',
+                'services.price'
+            )
+            ->get();
+
+        if ($appointment_details->isEmpty()) {
+            $response = [
+                'appointments' => $appointment_details,
+                'message' => 'No New Appointment'
+            ];
+        } else {
+            $response = [
+                'appointments' => $appointment_details,
+                'message' => 'New Appointments'
+            ];
+        }
+       
+        return response($response, 201);
+    }
 }

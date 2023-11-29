@@ -105,6 +105,8 @@ Route::middleware('auth:sanctum')->group( function () {
     
     Route::get('/get-product-lowstocks', [ProductController::class, 'getLowStocks']);
     Route::get('/get-product-expire', [ProductController::class, 'getEpxireStocks']);
+
+    Route::get('/get-new-appointment', [AppointmentController::class, 'getNewAppointment']);
 });
 
 

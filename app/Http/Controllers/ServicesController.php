@@ -131,7 +131,7 @@ class ServicesController extends Controller
     }
 
     public function getServicesDropdown(){
-        $data = Services::select('id','name')->get();
+        $data = Services::select('id','name','price')->get();
         return $data;
     }   
 
