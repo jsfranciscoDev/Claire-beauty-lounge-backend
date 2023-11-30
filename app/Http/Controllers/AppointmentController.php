@@ -126,34 +126,30 @@ class AppointmentController extends Controller
     }
 
     public function getAllAppointments(Request $request){
-        \Log::info($request->all());
-     
+        
+        \Log::info($request->input('datefilter'));
         $dateFilter = $request->input('datefilter');
-
+        
         $formattedDateArray = [];
-
+        
         // Check if 'datefilter' is set and is an array
         if (is_array($dateFilter)) {
             // Iterate through each date in the date range
-            foreach ($dateFilter as $date) {
-                // Parse the input date using Carbon
-                $carbonDate = \Carbon\Carbon::parse($date);
-                
-                // Format the start of the date in the desired format
-                $formattedStartDate = $carbonDate->format('Y-m-d 00:00:00');
-                
-                // Format the end of the date in the desired format (end of day)
-                $formattedEndDate = $carbonDate->endOfDay()->format('Y-m-d 23:59:59');
-                
-                // Store the formatted dates in a new array
+            for ($i = 0; $i < count($dateFilter); $i += 2) {
+                // Parse the input dates using Carbon
+                $carbonDateFrom = \Carbon\Carbon::parse($dateFilter[$i]);
+                $carbonDateTo = \Carbon\Carbon::parse($dateFilter[$i + 1]);
+        
+                // Format the dates in the desired format
                 $formattedDateArray[] = [
-                    'date_from' => $formattedStartDate,
-                    'date_to' => $formattedEndDate,
+                    'date_from' => $carbonDateFrom->format('Y-m-d 00:00:00'),
+                    'date_to' => $carbonDateTo->format('Y-m-d 23:59:59'),
                 ];
             }
         }
         
         \Log::info($formattedDateArray);
+        
 
         $data = Appointment::getQuery()
         ->join('users','users.id','appointment.user_id')
@@ -175,9 +171,11 @@ class AppointmentController extends Controller
             \DB::raw('(SELECT name FROM users WHERE id = appointment.process_by) as process_by'),
             'process_by_role.role as process_by_role'
         )
-        ->when($formattedDateArray, function ($query) use ($formattedDateArray) {
-            // Add a search filter based on the service name
-            $query->whereBetween('appointment.date',  [$formattedDateArray['date_from'],$formattedDateArray['date_to']]);
+        ->when(!empty($formattedDateArray), function ($query) use ($formattedDateArray) {
+            foreach ($formattedDateArray as $dateRange) {
+                // Add a search filter based on the service name
+                $query->orWhereBetween('appointment.date', [$dateRange['date_from'], $dateRange['date_to']]);
+            }
         })
         ->when($request->has('search'), function ($query) use ($request) {
             $searchTerm = $request->input('search');
