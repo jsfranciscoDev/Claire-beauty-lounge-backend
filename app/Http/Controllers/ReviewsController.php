@@ -16,6 +16,9 @@ class ReviewsController extends Controller
     public function storeUserFeedback(Request $request){
 
         $user = auth()->user();
+
+        \Log::info($request->all());
+
         // $timestamp = Carbon::now()->timestamp;
         
         // $base64_image = $request->payload['image'];
@@ -51,7 +54,7 @@ class ReviewsController extends Controller
         // $reviews->image_path = $image_path;
         $reviews->save();
 
-        $appointment = Appointment::where('user_id',  $user->id)->where('review', 0)->first();
+        $appointment = Appointment::where('id',  $request->payload['appointment_id'])->where('review', 0)->first();
         $appointment->review = 1;
         $appointment->save();
 

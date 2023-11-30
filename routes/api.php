@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
     Route::post('/create-appointment', [AppointmentController::class, 'createAppointment']);
     Route::get('/get-appointment', [AppointmentController::class, 'getUserAppointment']);
+    Route::get('/get-scheduler-all-appointment', [AppointmentController::class, 'getSchedulerallAppointment']);
 
     Route::post('/attach-service-items', [ServicesController::class, 'createServiceItems']);
     Route::post('/remove-service-items', [ServicesController::class, 'removeSeviceItems']);

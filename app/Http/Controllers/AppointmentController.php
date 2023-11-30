@@ -15,13 +15,45 @@ use Carbon\Carbon;
 use Mail;
 use App\Mail\replyEmail;
 use App\Models\Notifications;
+use Illuminate\Support\Str;
 
 class AppointmentController extends Controller
 {
     //
     public function createAppointment(Request $request)
     {
+        \Log::info($request->all());
+    
+        $appointments = Appointment::getQuery()
+        ->join('services','services.id','appointment.service_id')
+        ->join('users','users.id','appointment.staff_id')
+        ->where('users.id', $request->input('user_staff'))
+        ->where('appointment.status', 3)
+        ->first();
         
+        \Log::info(json_encode($appointments));
+        $appointmentDate = $request->input('date').' '.$request->input('time').':00';
+
+        if (!is_null($appointments)) {
+            $appointmentDate = Carbon::parse($appointments->date);
+            $estimatedHours = Carbon::parse($appointments->estimated_hours);
+        
+            $endTime = $appointmentDate->add($estimatedHours->hour, 'hours')->add($estimatedHours->minute, 'minutes');
+        
+            \Log::info('End Time: ' . $endTime);
+
+            $formattedEndTime = Carbon::parse($endTime);
+            $formattedAppointmentDate = Carbon::parse($request->input('date').' '.$request->input('time').':00');
+            
+            \Log::info('new apapsda '.$formattedAppointmentDate);
+            
+            if ($formattedAppointmentDate->lessThan($formattedEndTime)) {
+                return response()->json(['message' => 'This time has already been booked to another client!', 'status' => 'failed']);
+            }
+        }
+
+       
+
         $user = Auth::user();
         $date = $request->input('date');
         $time = $request->input('time');
@@ -50,13 +82,16 @@ class AppointmentController extends Controller
                 
                 \Log::info($Notifications->email);
 
-                $mailData = [
-                    'title' => 'Claire Beauty Lounge',
-                    'body' => 'Congratulations!! You New Appointments!',
-                    'service_details' => $service
-                ];
-                
-                Mail::to($Notifications->email)->send(new ReplyEmail($mailData));
+                if ($Notifications->email !== null) {
+                    $mailData = [
+                        'title' => 'Claire Beauty Lounge',
+                        'body' => 'Congratulations!! You have new appointments!',
+                        'service_details' => $service
+                    ];
+                    
+                    Mail::to($Notifications->email)->send(new ReplyEmail($mailData));
+                }
+               
 
                 DB::commit();
                 return response()->json(['message' => 'Appointment Booked Successfully!', 'status' => 'success']);
@@ -113,8 +148,7 @@ class AppointmentController extends Controller
             'appointment.created_at',
             \DB::raw('(SELECT name FROM users WHERE id = appointment.staff_id) as staff_name') // Subquery to get user name 
         )
-        ->latest('appointment.created_at')
-        ->first();
+        ->get();
         
 
         $response = [
@@ -278,7 +312,9 @@ class AppointmentController extends Controller
 
 
     public function updateAppointment(Request $request){
-       
+        
+        \Log::info($request->all());
+
         DB::beginTransaction();
         $user = auth()->user();
         try {
@@ -460,5 +496,54 @@ class AppointmentController extends Controller
         }
        
         return response($response, 201);
+    }
+
+    public function getSchedulerallAppointment(){
+
+        $appointment = DB::table('appointment')
+        ->join('users', 'users.id', 'appointment.staff_id')
+        ->join('services', 'services.id', 'appointment.service_id')
+        ->join('appointment_status', 'appointment.status', 'appointment_status.id')
+        ->whereIn('appointment.status', [1, 3])
+        ->orderBy('appointment.date', 'asc')
+        ->select(
+            'users.name',
+            'appointment.date',
+            'services.estimated_hours',
+            'services.name as service',
+            'appointment.id as id',
+            'appointment.remarks',
+            'appointment_status.detail as status',
+        )
+        ->get()
+        ->map(function ($appointment) {
+            // Convert date to Carbon instance
+            $startDateTime = Carbon::parse($appointment->date);
+    
+            // Extract hours and minutes from estimated_hours
+            list($hours, $minutes) = explode(':', $appointment->estimated_hours);
+    
+            // Add hours and minutes to date to get accurate end time
+            $endDateTime = $startDateTime->copy()->addHours($hours)->addMinutes($minutes);
+    
+            return [
+                'title' => $appointment->service,
+                'with' => 'Staff: '.$appointment->name,
+                'time' => [
+                    'start' => $startDateTime->format('Y-m-d H:i'),
+                    'end' => $endDateTime->format('Y-m-d H:i'),
+                ],
+                'color' => 'yellow', // You can customize this based on your requirements
+                'isEditable' => false, // Adjust as needed
+                'id' => (string) $appointment->id, // Convert id to string
+                'description' => 'Status: '.$appointment->status,
+                
+            ];
+        });
+    
+    // Convert the collection to an array
+    $data = $appointment->toArray();
+    
+        return response()->json($data);
     }
 }
