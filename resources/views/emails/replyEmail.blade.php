@@ -23,7 +23,7 @@
                                     $serviceData = json_decode($mailData['service_details'], true);
                                 @endphp
                                  <h2 style="color: #bd8c8c;">{{ $serviceData['name'] }}</h2>
-                                 <h1 style="color: #888888;">Price: ₱{{ $serviceData['price'] }}</h1>
+                                 <h1 style="color: #888888;">Total Price: ₱{{ $serviceData['price'] }}</h1>
 
                             @endisset
                             
